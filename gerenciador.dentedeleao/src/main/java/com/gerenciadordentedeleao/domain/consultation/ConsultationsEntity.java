@@ -1,5 +1,6 @@
 package com.gerenciadordentedeleao.domain.consultation;
 
+import com.gerenciadordentedeleao.domain.consultationType.ConsultationTypeEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -7,12 +8,11 @@ import lombok.Setter;
 import java.sql.Timestamp;
 import java.util.UUID;
 
+
 @Entity(name = "consultations")
 @Table(name = "consultations")
 @Setter
 public class ConsultationsEntity {
-
-    // todo: revisar as datas e adicionar a foreign key consultation_type_id
 
     @Id
     @Column(name = "id", updatable = false)
@@ -34,4 +34,9 @@ public class ConsultationsEntity {
 
     @Column(name = "concluded")
     private Boolean concluded = false;
+
+    @ManyToOne
+    @JoinColumn(name = "consultation_type_id", referencedColumnName = "id")
+    @Getter
+    private ConsultationTypeEntity consultationTypeId;
 }

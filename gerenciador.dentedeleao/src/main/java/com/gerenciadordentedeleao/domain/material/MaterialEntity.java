@@ -1,5 +1,6 @@
 package com.gerenciadordentedeleao.domain.material;
 
+import com.gerenciadordentedeleao.domain.category.CategoryEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -10,7 +11,6 @@ import java.util.UUID;
 @Table(name = "materials")
 @Setter
 public class MaterialEntity {
-    // todo: Falta a foreign key category_id
 
     @Id
     @Column(name = "id", updatable = false)
@@ -24,4 +24,9 @@ public class MaterialEntity {
 
     @Column(name = "excluded")
     private Boolean excluded = false;
+
+    @ManyToOne
+    @JoinColumn(name = "category_id", referencedColumnName = "id")
+    @Getter
+    private CategoryEntity categoryId;
 }
