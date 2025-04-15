@@ -1,4 +1,4 @@
-package com.gerenciadordentedeleao.domain.consultationType;
+package com.gerenciadordentedeleao.domain.consultation.type;
 
 import jakarta.persistence.*;
 import lombok.Getter;

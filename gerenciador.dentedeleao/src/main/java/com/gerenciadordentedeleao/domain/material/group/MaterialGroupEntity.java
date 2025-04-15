@@ -1,4 +1,4 @@
-package com.gerenciadordentedeleao.domain.materialsGroup;
+package com.gerenciadordentedeleao.domain.material.group;
 
 import jakarta.persistence.*;
 import lombok.Getter;
