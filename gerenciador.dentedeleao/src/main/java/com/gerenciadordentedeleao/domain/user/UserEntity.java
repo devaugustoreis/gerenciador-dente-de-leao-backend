@@ -3,6 +3,7 @@ package com.gerenciadordentedeleao.domain.user;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.FilterDef;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -15,6 +16,8 @@ import java.util.UUID;
 @Entity(name = "users")
 @Table(name = "users")
 @Setter
+@Filter(name="SOFT_EXCLUSION")
+@FilterDef(name = "SOFT_EXCLUSION", defaultCondition = "excluded = false")
 public class UserEntity implements UserDetails {
 
     @Id

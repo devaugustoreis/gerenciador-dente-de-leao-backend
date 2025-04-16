@@ -1,6 +1,6 @@
-package com.gerenciadordentedeleao.domain.materialHistoric;
+package com.gerenciadordentedeleao.domain.material.historic;
 
-import com.gerenciadordentedeleao.domain.materialStock.MaterialStockEntity;
+import com.gerenciadordentedeleao.domain.material.stock.MaterialStockEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -8,8 +8,8 @@ import lombok.Setter;
 import java.sql.Timestamp;
 import java.util.UUID;
 
-@Entity(name = "materials_stock")
-@Table(name = "materials_stock")
+@Entity(name = "materials_historic")
+@Table(name = "materials_historic")
 @Setter
 @Getter
 public class MaterialHistoricEntity {

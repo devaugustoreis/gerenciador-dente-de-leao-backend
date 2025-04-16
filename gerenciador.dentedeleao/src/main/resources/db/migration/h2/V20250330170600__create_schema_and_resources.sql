@@ -1,0 +1,1 @@
+    CREATE SCHEMA IF NOT EXISTS dente_de_leao_manager;
