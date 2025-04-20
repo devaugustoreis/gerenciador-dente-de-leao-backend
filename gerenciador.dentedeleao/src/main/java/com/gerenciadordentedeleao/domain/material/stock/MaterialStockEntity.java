@@ -1,4 +1,4 @@
-package com.gerenciadordentedeleao.domain.materialStock;
+package com.gerenciadordentedeleao.domain.material.stock;
 
 import com.gerenciadordentedeleao.domain.material.MaterialEntity;
 import jakarta.persistence.*;

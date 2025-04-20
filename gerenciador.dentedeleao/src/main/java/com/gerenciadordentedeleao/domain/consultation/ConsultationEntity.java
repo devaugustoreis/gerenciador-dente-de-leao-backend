@@ -1,6 +1,6 @@
 package com.gerenciadordentedeleao.domain.consultation;
 
-import com.gerenciadordentedeleao.domain.consultationType.ConsultationTypeEntity;
+import com.gerenciadordentedeleao.domain.consultation.type.ConsultationTypeEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -12,7 +12,7 @@ import java.util.UUID;
 @Entity(name = "consultations")
 @Table(name = "consultations")
 @Setter
-public class ConsultationsEntity {
+public class ConsultationEntity {
 
     @Id
     @Column(name = "id", updatable = false)

@@ -4,12 +4,16 @@ import com.gerenciadordentedeleao.domain.category.CategoryEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.Filter;
+import org.hibernate.annotations.FilterDef;
 
 import java.util.UUID;
 
 @Entity(name = "materials")
 @Table(name = "materials")
 @Setter
+@Filter(name="SOFT_EXCLUSION")
+@FilterDef(name = "SOFT_EXCLUSION", defaultCondition = "excluded = false")
 public class MaterialEntity {
 
     @Id
