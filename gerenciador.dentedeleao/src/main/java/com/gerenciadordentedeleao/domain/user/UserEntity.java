@@ -16,8 +16,7 @@ import java.util.UUID;
 @Entity(name = "users")
 @Table(name = "users")
 @Setter
-@Filter(name="SOFT_EXCLUSION")
-@FilterDef(name = "SOFT_EXCLUSION", defaultCondition = "excluded = false")
+@Filter(name = "SOFT_EXCLUSION", condition = "excluded = false")
 public class UserEntity implements UserDetails {
 
     @Id
