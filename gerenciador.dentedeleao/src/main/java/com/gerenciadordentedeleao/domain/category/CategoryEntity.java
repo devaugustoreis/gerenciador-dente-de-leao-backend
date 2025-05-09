@@ -1,15 +1,10 @@
 package com.gerenciadordentedeleao.domain.category;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.Filter;
-import org.hibernate.annotations.FilterDef;
-import org.hibernate.annotations.GenericGenerator;
+import org.springframework.data.domain.Persistable;
 
 import java.util.UUID;
 
@@ -17,12 +12,11 @@ import java.util.UUID;
 @Table(name = "categories")
 @Setter
 @Filter(name = "SOFT_EXCLUSION", condition = "excluded = false")
-public class CategoryEntity {
+public class CategoryEntity implements Persistable<UUID> {
 
     @Id
     @Column(name = "id", updatable = false)
     @GeneratedValue(generator = "uuid2")
-    @GenericGenerator(name = "uuid2", strategy = "uuid2")
     @Getter
     private UUID id;
 
@@ -32,4 +26,9 @@ public class CategoryEntity {
 
     @Column(name = "excluded")
     private Boolean excluded = false;
+
+    @Override
+    public boolean isNew() {
+        return false;
+    }
 }
