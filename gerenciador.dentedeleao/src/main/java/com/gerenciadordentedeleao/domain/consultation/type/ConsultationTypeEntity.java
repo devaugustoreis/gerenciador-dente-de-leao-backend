@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.FilterDef;
+import org.springframework.data.domain.Persistable;
 
 import java.util.UUID;
 
@@ -12,7 +13,7 @@ import java.util.UUID;
 @Table(name = "consultation_types")
 @Setter
 @Filter(name = "SOFT_EXCLUSION", condition = "excluded = false")
-public class ConsultationTypeEntity {
+public class ConsultationTypeEntity implements Persistable<UUID> {
 
     @Id
     @Column(name = "id", updatable = false)
@@ -26,4 +27,14 @@ public class ConsultationTypeEntity {
 
     @Column(name = "excluded")
     private Boolean excluded = false;
+
+    @Override
+    public UUID getId() {
+        return id;
+    }
+
+    @Override
+    public boolean isNew() {
+        return id == null;
+    }
 }

@@ -28,7 +28,12 @@ public class CategoryEntity implements Persistable<UUID> {
     private Boolean excluded = false;
 
     @Override
+    public UUID getId() {
+        return id;
+    }
+
+    @Override
     public boolean isNew() {
-        return false;
+        return id == null;
     }
 }

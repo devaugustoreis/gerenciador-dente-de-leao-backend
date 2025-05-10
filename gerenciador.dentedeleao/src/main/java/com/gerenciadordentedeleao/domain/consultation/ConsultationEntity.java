@@ -4,6 +4,7 @@ import com.gerenciadordentedeleao.domain.consultation.type.ConsultationTypeEntit
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.data.domain.Persistable;
 
 import java.sql.Timestamp;
 import java.util.UUID;
@@ -12,7 +13,7 @@ import java.util.UUID;
 @Entity(name = "consultations")
 @Table(name = "consultations")
 @Setter
-public class ConsultationEntity {
+public class ConsultationEntity implements Persistable<UUID> {
 
     @Id
     @Column(name = "id", updatable = false)
@@ -39,4 +40,14 @@ public class ConsultationEntity {
     @JoinColumn(name = "consultation_type_id", referencedColumnName = "id")
     @Getter
     private ConsultationTypeEntity consultationTypeId;
+
+    @Override
+    public UUID getId() {
+        return id;
+    }
+
+    @Override
+    public boolean isNew() {
+        return id == null;
+    }
 }
