@@ -13,23 +13,20 @@ import java.util.UUID;
 @Entity(name = "consultations")
 @Table(name = "consultations")
 @Setter
+@Getter
 public class ConsultationEntity implements Persistable<UUID> {
 
     @Id
     @Column(name = "id", updatable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Getter
     private UUID id;
 
-    @Getter
     @Column(name = "patient_name")
     private String patientName;
 
-    @Getter
     @Column(name = "start_date")
     private Timestamp startDate;
 
-    @Getter
     @Column(name = "end_date")
     private Timestamp endDate;
 
@@ -38,7 +35,6 @@ public class ConsultationEntity implements Persistable<UUID> {
 
     @ManyToOne
     @JoinColumn(name = "consultation_type_id", referencedColumnName = "id")
-    @Getter
     private ConsultationTypeEntity consultationTypeId;
 
     @Override

@@ -4,11 +4,23 @@ import com.gerenciadordentedeleao.application.abstractions.AbstractCrudService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
 @Service
 public class MaterialGroupCrudService extends AbstractCrudService<MaterialGroupEntity> {
 
     @Autowired
+    private MaterialGroupRepository materialGroupRepository;
+
     protected MaterialGroupCrudService(MaterialGroupRepository repository) {
         super(repository);
+    }
+
+    public void logicalDeleteMaterialGroup(UUID id) {
+        materialGroupRepository.findById(id).map(materialGroup -> {
+            materialGroup.setExcluded(true);
+            materialGroupRepository.save(materialGroup);
+            return true;
+        });
     }
 }

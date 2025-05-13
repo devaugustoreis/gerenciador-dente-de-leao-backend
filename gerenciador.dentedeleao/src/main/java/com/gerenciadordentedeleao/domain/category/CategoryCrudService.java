@@ -12,7 +12,6 @@ public class CategoryCrudService extends AbstractCrudService<CategoryEntity> {
     @Autowired
     private CategoryRepository categoryRepository;
 
-    @Autowired
     public CategoryCrudService(CategoryRepository categoryRepository) {
         super(categoryRepository);
     }

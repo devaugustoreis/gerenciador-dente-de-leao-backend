@@ -12,16 +12,15 @@ import java.util.UUID;
 @Entity(name = "materials_groups")
 @Table(name = "materials_groups")
 @Setter
+@Getter
 @Filter(name = "SOFT_EXCLUSION", condition = "excluded = false")
 public class MaterialGroupEntity implements Persistable<UUID> {
 
     @Id
     @Column(name = "id", updatable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Getter
     private UUID id;
 
-    @Getter
     @Column(name = "label")
     private String label;
 

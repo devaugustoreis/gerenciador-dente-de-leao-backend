@@ -11,16 +11,15 @@ import java.util.UUID;
 @Entity(name = "categories")
 @Table(name = "categories")
 @Setter
+@Getter
 @Filter(name = "SOFT_EXCLUSION", condition = "excluded = false")
 public class CategoryEntity implements Persistable<UUID> {
 
     @Id
     @Column(name = "id", updatable = false)
     @GeneratedValue(generator = "uuid2")
-    @Getter
     private UUID id;
 
-    @Getter
     @Column(name = "label")
     private String label;
 
@@ -35,9 +34,5 @@ public class CategoryEntity implements Persistable<UUID> {
     @Override
     public boolean isNew() {
         return id == null;
-    }
-
-    public void setExcluded(Boolean excluded) {
-        this.excluded = excluded;
     }
 }

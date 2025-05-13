@@ -13,6 +13,7 @@ import java.util.UUID;
 @Entity(name = "materials")
 @Table(name = "materials")
 @Setter
+@Getter
 @FilterDef(name = "SOFT_EXCLUSION", defaultCondition = "excluded = false")
 @Filter(name = "SOFT_EXCLUSION", condition = "excluded = false")
 public class MaterialEntity implements Persistable<UUID> {
@@ -20,11 +21,8 @@ public class MaterialEntity implements Persistable<UUID> {
     @Id
     @Column(name = "id", updatable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Getter
     private UUID id;
 
-    @Getter
-    @Setter
     @Column(name = "name")
     private String name;
 
@@ -33,7 +31,6 @@ public class MaterialEntity implements Persistable<UUID> {
 
     @ManyToOne
     @JoinColumn(name = "category_id", referencedColumnName = "id")
-    @Getter
     private CategoryEntity categoryId;
 
     @Override
