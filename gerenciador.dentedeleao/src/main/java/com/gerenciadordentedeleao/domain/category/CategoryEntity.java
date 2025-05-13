@@ -36,4 +36,8 @@ public class CategoryEntity implements Persistable<UUID> {
     public boolean isNew() {
         return id == null;
     }
+
+    public void setExcluded(Boolean excluded) {
+        this.excluded = excluded;
+    }
 }

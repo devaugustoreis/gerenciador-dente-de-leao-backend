@@ -4,12 +4,25 @@ import com.gerenciadordentedeleao.application.abstractions.AbstractCrudService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
 @Service
 public class CategoryCrudService extends AbstractCrudService<CategoryEntity> {
+
+    @Autowired
+    private CategoryRepository categoryRepository;
 
     @Autowired
     public CategoryCrudService(CategoryRepository categoryRepository) {
         super(categoryRepository);
     }
 
+    @Autowired
+    public void logicalDeleteCategory(UUID id) {
+        categoryRepository.findById(id).map(category -> {
+            category.setExcluded(true);
+            categoryRepository.save(category);
+            return true;
+        });
+    }
 }

@@ -30,4 +30,12 @@ public class MaterialStockEntity {
     @OneToOne
     @JoinColumn(name = "material_id", referencedColumnName = "id")
     private MaterialEntity materialId;
+
+    public void setStockQuantity(Integer stockQuantity) {
+        this.stockQuantity = stockQuantity;
+    }
+
+    public void setMaterialId(MaterialEntity materialId) {
+        this.materialId = materialId;
+    }
 }
