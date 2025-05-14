@@ -42,16 +42,4 @@ public class MaterialEntity implements Persistable<UUID> {
     public boolean isNew() {
         return id == null;
     }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setCategoryId(CategoryEntity categoryId) {
-        this.categoryId = categoryId;
-    }
-
-    public void setExcluded(Boolean excluded) {
-        this.excluded = excluded;
-    }
 }

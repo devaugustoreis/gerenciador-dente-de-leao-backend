@@ -3,6 +3,7 @@ package com.gerenciadordentedeleao.domain.category;
 import com.gerenciadordentedeleao.application.abstractions.AbstractCrudService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.DeleteMapping;
 
 import java.util.UUID;
 
@@ -16,7 +17,7 @@ public class CategoryCrudService extends AbstractCrudService<CategoryEntity> {
         super(categoryRepository);
     }
 
-    @Autowired
+    @DeleteMapping("/{id}")
     public void logicalDeleteCategory(UUID id) {
         categoryRepository.findById(id).map(category -> {
             category.setExcluded(true);

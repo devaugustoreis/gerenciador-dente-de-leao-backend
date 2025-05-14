@@ -3,6 +3,7 @@ package com.gerenciadordentedeleao.domain.material.group;
 import com.gerenciadordentedeleao.application.abstractions.AbstractCrudService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.DeleteMapping;
 
 import java.util.UUID;
 
@@ -16,6 +17,7 @@ public class MaterialGroupCrudService extends AbstractCrudService<MaterialGroupE
         super(repository);
     }
 
+    @DeleteMapping("/{id}")
     public void logicalDeleteMaterialGroup(UUID id) {
         materialGroupRepository.findById(id).map(materialGroup -> {
             materialGroup.setExcluded(true);

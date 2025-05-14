@@ -28,28 +28,24 @@ public class MaterialCrudService extends AbstractCrudService<MaterialEntity> {
     public MaterialEntity createMaterial(MaterialRequestDTO dto) {
         MaterialEntity material = new MaterialEntity();
         material.setName(dto.getName());
-        material.setExcluded(false);
         material.setCategoryId(dto.getCategoryId());
 
-        MaterialStockEntity stock = new MaterialStockEntity();
-        stock.setStockQuantity(dto.getStockQuantity());
-        stock.setMaterialId(material);
-        material.setMaterialStock(stock);
+        MaterialStockEntity material_stock = new MaterialStockEntity();
+        material_stock.setStockQuantity(dto.getStockQuantity());
 
         return materialRepository.save(material);
     }
 
-    public Optional<MaterialEntity> updateMaterial(UUID id, MaterialRequestDTO dto) {
-        return materialRepository.findById(id).map(material -> {
-            material.setName(dto.getName());
-            material.setCategoryId(dto.getCategoryId());
+    public MaterialEntity updateMaterial(UUID id, MaterialRequestDTO dto) {
+        MaterialEntity material = materialRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Material não encontrado com o ID: " + id));
 
-            MaterialStockEntity stock = material.getMaterialStock();
-            if (stock != null) {
-                stock.setStockQuantity(dto.getStockQuantity());
-            }
+        material.setName(dto.getName());
+        material.setCategoryId(dto.getCategoryId());
 
-            return materialRepository.save(material);
-        });
+        MaterialStockEntity materialStockEntity = new MaterialStockEntity();
+        materialStockEntity.setStockQuantity(dto.getStockQuantity());
+
+        return materialRepository.save(material);
     }
 }
