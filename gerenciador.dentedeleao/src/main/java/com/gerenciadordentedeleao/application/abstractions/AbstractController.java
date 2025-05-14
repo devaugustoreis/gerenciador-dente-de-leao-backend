@@ -44,7 +44,12 @@ public abstract class AbstractController<T extends Persistable<UUID>> {
     @PutMapping
     public ResponseEntity<T> update(@RequestBody T entity) {
         var updatedEntity = crudService.save(entity);
-
         return ResponseEntity.ok(updatedEntity);
+    }
+
+    @DeleteMapping("{id}")
+    public ResponseEntity<Void> delete(@PathVariable UUID id) {
+        crudService.delete(id);
+        return ResponseEntity.noContent().build();
     }
 }

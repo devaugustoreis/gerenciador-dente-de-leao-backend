@@ -1,6 +1,7 @@
 package com.gerenciadordentedeleao.domain.material;
 
 import com.gerenciadordentedeleao.domain.category.CategoryEntity;
+import com.gerenciadordentedeleao.domain.material.stock.MaterialStockEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -20,7 +21,7 @@ public class MaterialEntity implements Persistable<UUID> {
 
     @Id
     @Column(name = "id", updatable = false)
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO, generator = "uuid2")
     private UUID id;
 
     @Column(name = "name")
@@ -31,7 +32,11 @@ public class MaterialEntity implements Persistable<UUID> {
 
     @ManyToOne
     @JoinColumn(name = "category_id", referencedColumnName = "id")
-    private CategoryEntity categoryId;
+    private CategoryEntity category;
+
+    @OneToOne
+    @JoinColumn(name = "id" , referencedColumnName = "material_id")
+    private MaterialStockEntity stock;
 
     @Override
     public UUID getId() {

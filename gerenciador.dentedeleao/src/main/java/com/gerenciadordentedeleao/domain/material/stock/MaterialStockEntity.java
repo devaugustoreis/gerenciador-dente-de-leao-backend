@@ -1,10 +1,12 @@
 package com.gerenciadordentedeleao.domain.material.stock;
 
 import com.gerenciadordentedeleao.domain.material.MaterialEntity;
+import com.gerenciadordentedeleao.domain.material.historic.MaterialHistoricEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
 import java.util.UUID;
 
 @Entity(name = "materials_stock")
@@ -15,7 +17,7 @@ public class MaterialStockEntity {
 
     @Id
     @Column(name = "id", updatable = false)
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(generator = "uuid2")
     private UUID id;
 
     @Column(name = "stock_quantity")
@@ -29,5 +31,8 @@ public class MaterialStockEntity {
 
     @OneToOne
     @JoinColumn(name = "material_id", referencedColumnName = "id")
-    private MaterialEntity materialId;
+    private MaterialEntity material;
+
+    @OneToMany(mappedBy = "materialStock",fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<MaterialHistoricEntity> materialHistoric;
 }
