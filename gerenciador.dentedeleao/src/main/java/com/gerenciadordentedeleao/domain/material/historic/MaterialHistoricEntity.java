@@ -1,11 +1,11 @@
 package com.gerenciadordentedeleao.domain.material.historic;
 
-import com.gerenciadordentedeleao.domain.material.stock.MaterialStockEntity;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.gerenciadordentedeleao.domain.material.MaterialEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -30,8 +30,9 @@ public class MaterialHistoricEntity {
     @Column(name = "movement_date")
     private LocalDateTime movementDate;
 
-    @ManyToOne
-    @JoinColumn(name = "material_stock_id", referencedColumnName = "id")
-    private MaterialStockEntity materialStock;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "material_id", referencedColumnName = "id")
+    @JsonIgnore
+    private MaterialEntity material;
 }
 

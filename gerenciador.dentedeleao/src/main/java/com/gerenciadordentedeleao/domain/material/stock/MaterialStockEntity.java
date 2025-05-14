@@ -20,19 +20,5 @@ public class MaterialStockEntity {
     @GeneratedValue(generator = "uuid2")
     private UUID id;
 
-    @Column(name = "stock_quantity")
-    private Integer stockQuantity;
 
-    @Column(name = "scheduled_quantity")
-    private Integer scheduledQuantity;
-
-    @Column(name = "alert_quantity")
-    private Integer alertQuantity;
-
-    @OneToOne
-    @JoinColumn(name = "material_id", referencedColumnName = "id")
-    private MaterialEntity material;
-
-    @OneToMany(mappedBy = "materialStock",fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<MaterialHistoricEntity> materialHistoric;
 }

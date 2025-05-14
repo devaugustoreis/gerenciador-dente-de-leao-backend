@@ -6,18 +6,18 @@ import com.gerenciadordentedeleao.domain.material.dto.MovementStockDTO;
 import com.gerenciadordentedeleao.domain.material.dto.UpdateMaterialDTO;
 import com.gerenciadordentedeleao.domain.material.historic.MaterialHistoricEntity;
 import com.gerenciadordentedeleao.domain.material.historic.MaterialHistoricRepository;
-import com.gerenciadordentedeleao.domain.material.stock.MaterialStockEntity;
-import com.gerenciadordentedeleao.domain.material.stock.MaterialStockRepository;
+import com.gerenciadordentedeleao.domain.material.historic.MovementType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.BiConsumer;
 
-// TO DO: Implementar o método de exclusão lógica e ajustar erro no 'setMaterialStock'
 @Service
 public class MaterialCrudService {
 
@@ -27,18 +27,24 @@ public class MaterialCrudService {
 
     private final MaterialHistoricRepository materialHistoricRepository;
 
-    private final MaterialStockRepository materialStockRepository;
+    private EnumMap<MovementType, BiConsumer<MaterialEntity, MovementStockDTO>> movementActions = new EnumMap<>(MovementType.class);
 
     @Autowired
-    public MaterialCrudService(MaterialRepository repository, CategoryRepository categoryRepository, MaterialHistoricRepository materialHistoricRepository, MaterialStockRepository materialStockRepository) {
+    public MaterialCrudService(MaterialRepository repository, CategoryRepository categoryRepository, MaterialHistoricRepository materialHistoricRepository) {
         this.repository = repository;
         this.categoryRepository = categoryRepository;
         this.materialHistoricRepository = materialHistoricRepository;
-        this.materialStockRepository = materialStockRepository;
+        movementActions.put(MovementType.ADDITION, this::additionMovementation);
+        movementActions.put(MovementType.REMOVAL, this::removalMovementation);
+        movementActions.put(MovementType.RESERVE, this::reserveMovementation);
     }
 
     public Optional<MaterialEntity> findById(UUID id) {
         return repository.findById(id);
+    }
+
+    public List<MaterialEntity> findAll() {
+        return repository.findAll();
     }
 
     public MaterialEntity create(CreateMaterialDTO dto) {
@@ -48,16 +54,10 @@ public class MaterialCrudService {
         var material = new MaterialEntity();
         material.setName(dto.name());
         material.setCategory(category);
-        material.setId(repository.saveAndFlush(material).getId());
-
-        var stock = new MaterialStockEntity();
-        stock.setStockQuantity(0);
-        stock.setScheduledQuantity(0);
-        stock.setAlertQuantity(0);
-        stock.setMaterial(material);
-
-        materialStockRepository.save(stock);
-        return material;
+        material.setStockQuantity(0);
+        material.setScheduledQuantity(0);
+        material.setAlertQuantity(0);
+        return repository.save(material);
     }
 
     public MaterialEntity update(UpdateMaterialDTO dto) {
@@ -77,33 +77,48 @@ public class MaterialCrudService {
         var material = repository.findById(dto.materialId())
                 .orElseThrow(() -> new IllegalArgumentException("Material não encontrado com o ID: " + dto.materialId()));
 
-        var stock = material.getStock();
+        if (dto.quantity() <= 0) {
+            throw new IllegalArgumentException("A quantidade deve ser maior que zero.");
+        }
+
+        movementActions.get(dto.movementType()).accept(material, dto);
 
         var movementation = new MaterialHistoricEntity();
-        movementation.setMaterialStock(stock);
+        movementation.setMaterial(material);
         movementation.setMovementType(dto.movementType());
         movementation.setQuantity(dto.quantity());
         movementation.setMovementDate(LocalDateTime.now());
 
         materialHistoricRepository.save(movementation);
-        //stock.getMaterialHistoric().add(movementation);
-
-        switch (dto.movementType()) {
-            case ADDITION -> stock.setStockQuantity(stock.getStockQuantity() + dto.quantity());
-            case REMOVAL -> {
-                stock.setStockQuantity(stock.getStockQuantity() - dto.quantity());
-                if (dto.reserveId() != null) {
-                    var reserve = materialHistoricRepository.findById(dto.reserveId()).orElseThrow();
-                    stock.setScheduledQuantity(stock.getScheduledQuantity() - reserve.getQuantity());
-                }
-            }
-            case RESERVE -> stock.setScheduledQuantity(stock.getScheduledQuantity() + dto.quantity());
-        }
         return repository.save(material);
     }
 
-    public List<MaterialEntity> findAll() {
-        return repository.findAll();
+    private void additionMovementation(MaterialEntity material, MovementStockDTO dto) {
+        material.setStockQuantity(material.getStockQuantity() + dto.quantity());
+    }
+
+    private void removalMovementation(MaterialEntity material, MovementStockDTO dto) {
+        int stockQuantity = material.getStockQuantity();
+        if (stockQuantity < dto.quantity()) {
+            throw new IllegalArgumentException("A quantidade em estoque não pode ser menor que zero.");
+        }
+
+        material.setStockQuantity(stockQuantity - dto.quantity());
+        if (dto.reserveId() == null) {
+            return;
+        }
+        //melhorar validação
+        var reserve = materialHistoricRepository.findById(dto.reserveId()).orElseThrow();
+        int newScheduleQuantity = material.getScheduledQuantity() - reserve.getQuantity();
+        material.setScheduledQuantity(Math.max(newScheduleQuantity, 0));
+    }
+
+    private void reserveMovementation(MaterialEntity material, MovementStockDTO dto) {
+        int newScheduleQuantity = material.getScheduledQuantity() + dto.quantity();
+        if (newScheduleQuantity > material.getStockQuantity()) {
+            throw new IllegalArgumentException("A quantidade agendada não pode ser maior que a quantidade em estoque.");
+        }
+        material.setScheduledQuantity(newScheduleQuantity);
     }
 
     public void delete(UUID id) {
