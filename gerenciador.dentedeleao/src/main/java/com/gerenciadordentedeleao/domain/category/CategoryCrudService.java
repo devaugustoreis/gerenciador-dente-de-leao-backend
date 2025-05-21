@@ -10,19 +10,7 @@ import java.util.UUID;
 @Service
 public class CategoryCrudService extends AbstractCrudService<CategoryEntity> {
 
-    @Autowired
-    private CategoryRepository categoryRepository;
-
     public CategoryCrudService(CategoryRepository categoryRepository) {
         super(categoryRepository);
-    }
-
-    @DeleteMapping("/{id}")
-    public void logicalDeleteCategory(UUID id) {
-        categoryRepository.findById(id).map(category -> {
-            category.setExcluded(true);
-            categoryRepository.save(category);
-            return true;
-        });
     }
 }
