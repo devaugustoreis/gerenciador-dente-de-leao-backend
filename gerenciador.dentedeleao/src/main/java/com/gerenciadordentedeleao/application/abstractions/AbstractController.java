@@ -54,7 +54,7 @@ public abstract class AbstractController<T extends Persistable<UUID>> {
     }
 
     @DeleteMapping("/logical/{deleted_col_name}/{id}")
-    public ResponseEntity<Void> logicalDelete(UUID id, String deleted_col_name) {
+    public ResponseEntity<Void> logicalDelete(@PathVariable UUID id, @PathVariable String deleted_col_name) {
         crudService.logicalDelete(id, deleted_col_name);
         return ResponseEntity.noContent().build();
     }
