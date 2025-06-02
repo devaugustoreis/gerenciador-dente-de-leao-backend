@@ -10,7 +10,7 @@ import java.sql.Timestamp;
 import java.util.UUID;
 
 
-@Entity(name = "consultations")
+@Entity(name = "ConsultationEntity")
 @Table(name = "consultations")
 @Setter
 @Getter

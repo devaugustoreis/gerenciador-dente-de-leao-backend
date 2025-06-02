@@ -4,5 +4,4 @@ public enum MovementType {
 
     ADDITION,
     REMOVAL,
-    RESERVE,
 }

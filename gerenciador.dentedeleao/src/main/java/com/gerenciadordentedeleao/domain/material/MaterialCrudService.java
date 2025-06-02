@@ -1,6 +1,7 @@
 package com.gerenciadordentedeleao.domain.material;
 
 import com.gerenciadordentedeleao.domain.category.CategoryRepository;
+import com.gerenciadordentedeleao.domain.consultation.material.ConsultationMaterialRepository;
 import com.gerenciadordentedeleao.domain.material.dto.CreateMaterialDTO;
 import com.gerenciadordentedeleao.domain.material.dto.MovementStockDTO;
 import com.gerenciadordentedeleao.domain.material.dto.UpdateMaterialDTO;
@@ -27,16 +28,18 @@ public class MaterialCrudService {
 
     private final MaterialHistoricRepository materialHistoricRepository;
 
-    private EnumMap<MovementType, BiConsumer<MaterialEntity, MovementStockDTO>> movementActions = new EnumMap<>(MovementType.class);
+    private final ConsultationMaterialRepository consultationMaterialRepository;
+
+    private final EnumMap<MovementType, BiConsumer<MaterialEntity, MovementStockDTO>> movementActions = new EnumMap<>(MovementType.class);
 
     @Autowired
-    public MaterialCrudService(MaterialRepository repository, CategoryRepository categoryRepository, MaterialHistoricRepository materialHistoricRepository) {
+    public MaterialCrudService(MaterialRepository repository, CategoryRepository categoryRepository, MaterialHistoricRepository materialHistoricRepository, ConsultationMaterialRepository consultationMaterialRepository) {
         this.repository = repository;
         this.categoryRepository = categoryRepository;
         this.materialHistoricRepository = materialHistoricRepository;
+        this.consultationMaterialRepository = consultationMaterialRepository;
         movementActions.put(MovementType.ADDITION, this::additionMovementation);
         movementActions.put(MovementType.REMOVAL, this::removalMovementation);
-        movementActions.put(MovementType.RESERVE, this::reserveMovementation);
     }
 
     public Optional<MaterialEntity> findById(UUID id) {
@@ -60,12 +63,12 @@ public class MaterialCrudService {
         return repository.save(material);
     }
 
-    public MaterialEntity update(UpdateMaterialDTO dto) {
-        var material = repository.findById(dto.materialId())
-                .orElseThrow(() -> new IllegalArgumentException("Material não encontrado com o ID: " + dto.materialId()));
+    public MaterialEntity update(UUID id, UpdateMaterialDTO dto) {
+        var material = repository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Material não encontrado com o ID: " + id));
 
         var category = categoryRepository.findById(dto.categoryId())
-                .orElseThrow(() -> new IllegalArgumentException("Categoria não encontrada com o ID: " + dto.categoryId()));
+                .orElseThrow(() -> new IllegalArgumentException("Categoria não encontrada com o ID: " + id));
 
         material.setName(dto.name());
         material.setCategory(category);
@@ -73,9 +76,9 @@ public class MaterialCrudService {
         return repository.save(material);
     }
 
-    public MaterialEntity movementStock(MovementStockDTO dto) {
-        var material = repository.findById(dto.materialId())
-                .orElseThrow(() -> new IllegalArgumentException("Material não encontrado com o ID: " + dto.materialId()));
+    public MaterialEntity movementStock(UUID id, MovementStockDTO dto) {
+        var material = repository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Material não encontrado com o ID: " + id));
 
         if (dto.quantity() <= 0) {
             throw new IllegalArgumentException("A quantidade deve ser maior que zero.");
@@ -83,13 +86,7 @@ public class MaterialCrudService {
 
         movementActions.get(dto.movementType()).accept(material, dto);
 
-        var movementation = new MaterialHistoricEntity();
-        movementation.setMaterial(material);
-        movementation.setMovementType(dto.movementType());
-        movementation.setQuantity(dto.quantity());
-        movementation.setMovementDate(LocalDateTime.now());
-
-        materialHistoricRepository.save(movementation);
+        createMovementHistoric(dto, material);
         return repository.save(material);
     }
 
@@ -104,21 +101,17 @@ public class MaterialCrudService {
         }
 
         material.setStockQuantity(stockQuantity - dto.quantity());
-        if (dto.reserveId() == null) {
-            return;
-        }
-        //melhorar validação
-        var reserve = materialHistoricRepository.findById(dto.reserveId()).orElseThrow();
-        int newScheduleQuantity = material.getScheduledQuantity() - reserve.getQuantity();
-        material.setScheduledQuantity(Math.max(newScheduleQuantity, 0));
+        material.setScheduledQuantity(consultationMaterialRepository.countByMaterialId(material));
     }
 
-    private void reserveMovementation(MaterialEntity material, MovementStockDTO dto) {
-        int newScheduleQuantity = material.getScheduledQuantity() + dto.quantity();
-        if (newScheduleQuantity > material.getStockQuantity()) {
-            throw new IllegalArgumentException("A quantidade agendada não pode ser maior que a quantidade em estoque.");
-        }
-        material.setScheduledQuantity(newScheduleQuantity);
+    private void createMovementHistoric(MovementStockDTO dto, MaterialEntity material) {
+        var movementation = new MaterialHistoricEntity();
+        movementation.setMaterial(material);
+        movementation.setMovementType(dto.movementType());
+        movementation.setQuantity(dto.quantity());
+        movementation.setMovementDate(LocalDateTime.now());
+
+        materialHistoricRepository.save(movementation);
     }
 
     public void delete(UUID id) {

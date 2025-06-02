@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-@Entity(name = "materials")
+@Entity(name = "MaterialEntity")
 @Table(name = "materials")
 @Setter
 @Getter
@@ -58,6 +58,7 @@ public class MaterialEntity implements Persistable<UUID> {
     private CategoryEntity category;
 
     @OneToMany(mappedBy = "material",fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private List<MaterialHistoricEntity> materialHistoric = new ArrayList<>();
 
     @Override

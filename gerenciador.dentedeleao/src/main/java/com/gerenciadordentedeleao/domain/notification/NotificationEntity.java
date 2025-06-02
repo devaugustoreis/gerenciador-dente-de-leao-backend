@@ -6,7 +6,7 @@ import lombok.Setter;
 
 import java.util.UUID;
 
-@Entity(name = "notifications")
+@Entity(name = "NotificationEntity")
 @Table(name = "notifications")
 @Setter
 @Getter

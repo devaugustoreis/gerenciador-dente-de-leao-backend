@@ -41,15 +41,15 @@ public class MaterialController {
         return ResponseEntity.status(HttpStatus.CREATED).body(novoMaterial);
     }
 
-    @PutMapping
-    public ResponseEntity<MaterialEntity> updateMaterial(@RequestBody UpdateMaterialDTO dto) {
-        MaterialEntity material = materialCrudService.update(dto);
+    @PutMapping("{id}")
+    public ResponseEntity<MaterialEntity> updateMaterial(@PathVariable UUID id, @RequestBody UpdateMaterialDTO dto) {
+        MaterialEntity material = materialCrudService.update(id, dto);
         return ResponseEntity.ok(material);
     }
 
-    @PostMapping("/movement-stock")
-    public ResponseEntity<MaterialEntity> movementStock(@RequestBody MovementStockDTO dto) {
-        MaterialEntity material = materialCrudService.movementStock(dto);
+    @PostMapping("/movement-stock/{id}")
+    public ResponseEntity<MaterialEntity> movementStock(@PathVariable UUID id,@RequestBody MovementStockDTO dto) {
+        MaterialEntity material = materialCrudService.movementStock(id, dto);
         return ResponseEntity.ok(material);
     }
 

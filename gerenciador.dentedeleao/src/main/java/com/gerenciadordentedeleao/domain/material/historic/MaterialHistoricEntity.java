@@ -9,7 +9,7 @@ import lombok.Setter;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-@Entity(name = "materials_historic")
+@Entity(name = "MaterialHistoricEntity")
 @Table(name = "materials_historic")
 @Setter
 @Getter

@@ -4,12 +4,11 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.Filter;
-import org.hibernate.annotations.FilterDef;
 import org.springframework.data.domain.Persistable;
 
 import java.util.UUID;
 
-@Entity(name = "materials_groups")
+@Entity(name = "MaterialGroupEntity")
 @Table(name = "materials_groups")
 @Setter
 @Getter

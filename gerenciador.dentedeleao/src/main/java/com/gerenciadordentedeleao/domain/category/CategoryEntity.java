@@ -8,7 +8,7 @@ import org.springframework.data.domain.Persistable;
 
 import java.util.UUID;
 
-@Entity(name = "categories")
+@Entity(name = "CategoryEntity")
 @Table(name = "categories")
 @Setter
 @Getter
