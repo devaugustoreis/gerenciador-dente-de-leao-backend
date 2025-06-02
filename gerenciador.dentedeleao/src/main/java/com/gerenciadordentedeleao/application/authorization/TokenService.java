@@ -7,6 +7,7 @@ import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.gerenciadordentedeleao.domain.user.UserEntity;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import com.gerenciadordentedeleao.application.errorhandler.BusinessException;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -27,7 +28,7 @@ public class TokenService {
                     .withExpiresAt(getExpirationDate())
                     .sign(algorithm);
         }catch (JWTCreationException exception) {
-            throw new RuntimeException("Error while generating token", exception);
+            throw new BusinessException("Error while generating token", exception);
         }
     }
 

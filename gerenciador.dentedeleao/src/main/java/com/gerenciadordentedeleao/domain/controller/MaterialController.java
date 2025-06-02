@@ -1,5 +1,6 @@
 package com.gerenciadordentedeleao.domain.controller;
 
+import com.gerenciadordentedeleao.application.errorhandler.ResourceNotFoundException;
 import com.gerenciadordentedeleao.domain.material.MaterialCrudService;
 import com.gerenciadordentedeleao.domain.material.MaterialEntity;
 import com.gerenciadordentedeleao.domain.material.dto.CreateMaterialDTO;
@@ -26,7 +27,7 @@ public class MaterialController {
 
     @GetMapping("{id}")
     public ResponseEntity<MaterialEntity> findMaterial(@PathVariable UUID id) {
-        MaterialEntity material = materialCrudService.findById(id).orElseThrow(() -> new IllegalArgumentException("Material não encontrado com o ID: " + id));
+        MaterialEntity material = materialCrudService.findById(id).orElseThrow(() -> new ResourceNotFoundException("Material", "ID", id));
         return ResponseEntity.ok(material);
     }
 

@@ -1,10 +1,17 @@
 package com.gerenciadordentedeleao.domain.consultation;
 
+import com.gerenciadordentedeleao.application.abstractions.PersistableEntity;
 import com.gerenciadordentedeleao.domain.consultation.type.ConsultationTypeEntity;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.data.domain.Persistable;
 
 import java.sql.Timestamp;
 import java.util.UUID;
@@ -14,7 +21,7 @@ import java.util.UUID;
 @Table(name = "consultations")
 @Setter
 @Getter
-public class ConsultationEntity implements Persistable<UUID> {
+public class ConsultationEntity implements PersistableEntity {
 
     @Id
     @Column(name = "id", updatable = false)
@@ -43,7 +50,8 @@ public class ConsultationEntity implements Persistable<UUID> {
     }
 
     @Override
-    public boolean isNew() {
-        return id == null;
+    public boolean setAsDeleted() {
+        return false;
     }
+
 }

@@ -8,6 +8,8 @@ import com.gerenciadordentedeleao.domain.material.dto.UpdateMaterialDTO;
 import com.gerenciadordentedeleao.domain.material.historic.MaterialHistoricEntity;
 import com.gerenciadordentedeleao.domain.material.historic.MaterialHistoricRepository;
 import com.gerenciadordentedeleao.domain.material.historic.MovementType;
+import com.gerenciadordentedeleao.application.errorhandler.BusinessException;
+import com.gerenciadordentedeleao.application.errorhandler.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
@@ -52,7 +54,7 @@ public class MaterialCrudService {
 
     public MaterialEntity create(CreateMaterialDTO dto) {
         var category = categoryRepository.findById(dto.categoryId())
-                .orElseThrow(() -> new IllegalArgumentException("Categoria não encontrada com o ID: " + dto.categoryId()));
+                .orElseThrow(() -> new BusinessException("Categoria não encontrada com o ID: " + dto.categoryId()));
 
         var material = new MaterialEntity();
         material.setName(dto.name());
@@ -65,10 +67,10 @@ public class MaterialCrudService {
 
     public MaterialEntity update(UUID id, UpdateMaterialDTO dto) {
         var material = repository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Material não encontrado com o ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Material", "ID", id));
 
         var category = categoryRepository.findById(dto.categoryId())
-                .orElseThrow(() -> new IllegalArgumentException("Categoria não encontrada com o ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Categoria", "ID", dto.categoryId()));
 
         material.setName(dto.name());
         material.setCategory(category);
@@ -78,10 +80,10 @@ public class MaterialCrudService {
 
     public MaterialEntity movementStock(UUID id, MovementStockDTO dto) {
         var material = repository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Material não encontrado com o ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Material", "ID", id));
 
         if (dto.quantity() <= 0) {
-            throw new IllegalArgumentException("A quantidade deve ser maior que zero.");
+            throw new BusinessException("A quantidade de movimentação deve ser maior que zero.");
         }
 
         movementActions.get(dto.movementType()).accept(material, dto);
@@ -97,7 +99,7 @@ public class MaterialCrudService {
     private void removalMovementation(MaterialEntity material, MovementStockDTO dto) {
         int stockQuantity = material.getStockQuantity();
         if (stockQuantity < dto.quantity()) {
-            throw new IllegalArgumentException("A quantidade em estoque não pode ser menor que zero.");
+            throw new BusinessException("A quantidade em estoque não pode ser menor que zero.");
         }
 
         material.setStockQuantity(stockQuantity - dto.quantity());

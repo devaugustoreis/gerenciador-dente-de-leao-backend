@@ -1,14 +1,19 @@
 package com.gerenciadordentedeleao.application.abstractions;
 
-import org.springframework.data.domain.Persistable;
+import com.gerenciadordentedeleao.application.errorhandler.ResourceNotFoundException;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.util.List;
 import java.util.UUID;
 
-public abstract class AbstractController<T extends Persistable<UUID>> {
+public abstract class AbstractController<T extends PersistableEntity> {
 
     private final AbstractCrudService<T> crudService;
 
@@ -18,7 +23,7 @@ public abstract class AbstractController<T extends Persistable<UUID>> {
 
     @GetMapping("{id}")
     public ResponseEntity<T> findById(@PathVariable UUID id) {
-        var entity = crudService.findById(id).orElseThrow(() -> new EntityNotFoundException(id.toString()));
+        var entity = crudService.findById(id).orElseThrow(() -> new ResourceNotFoundException(crudService.getEntityName(), "ID", id));
         return ResponseEntity.ok(entity);
     }
 
@@ -53,9 +58,4 @@ public abstract class AbstractController<T extends Persistable<UUID>> {
         return ResponseEntity.noContent().build();
     }
 
-    @DeleteMapping("/logical/{deleted_col_name}/{id}")
-    public ResponseEntity<Void> logicalDelete(UUID id, String deleted_col_name) {
-        crudService.logicalDelete(id, deleted_col_name);
-        return ResponseEntity.noContent().build();
-    }
 }
