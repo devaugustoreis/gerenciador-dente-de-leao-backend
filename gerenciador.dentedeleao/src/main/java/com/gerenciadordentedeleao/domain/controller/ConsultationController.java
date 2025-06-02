@@ -24,13 +24,13 @@ public class ConsultationController extends AbstractController<ConsultationEntit
         this.consultationCrudService = consultationCrudService;
     }
 
-    @PostMapping
+    @PostMapping("/create")
     public ResponseEntity<ConsultationEntity> create(@RequestBody CreateConsultationDTO dto){
         ConsultationEntity newConsultation = consultationCrudService.create(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(newConsultation);
     }
 
-    @PutMapping
+    @PutMapping("/update")
     public ResponseEntity<ConsultationEntity> update(@RequestBody UpdateConsultationDTO dto) {
         ConsultationEntity updatedConsultation = consultationCrudService.update(dto);
         return ResponseEntity.ok(updatedConsultation);

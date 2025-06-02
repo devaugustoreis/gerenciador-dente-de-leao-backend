@@ -28,6 +28,7 @@ public interface ConsultationRepository extends JpaRepository<ConsultationEntity
                                     @Param("material_id") UUID material_id,
                                     @Param("quantity") Integer quantity);
 
-    @Query("SELECT SUM(cm.quantity) FROM ConsultationMaterialEntity cm WHERE cm.material_id = :material_id AND cm.consultation_id IN (SELECT c.id FROM ConsultationEntity c WHERE c.concluded is false)")
+    @Query(value = "SELECT SUM(cm.quantity) FROM dente_de_leao_manager.consultation_materials cm WHERE cm.material_id = :material_id AND cm.consultation_id IN (SELECT c.id FROM ConsultationEntity c WHERE c.concluded is false)",
+            nativeQuery = true)
     Integer getScheduleQuantity(@Param("material_id") UUID material_id);
 }
