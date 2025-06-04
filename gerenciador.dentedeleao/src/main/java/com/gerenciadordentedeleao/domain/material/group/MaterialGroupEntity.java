@@ -1,15 +1,14 @@
 package com.gerenciadordentedeleao.domain.material.group;
 
 import com.gerenciadordentedeleao.application.abstractions.PersistableEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import com.gerenciadordentedeleao.domain.material.group.item.MaterialGroupItemEntity;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.Filter;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Entity(name = "MaterialGroupEntity")
@@ -30,6 +29,9 @@ public class MaterialGroupEntity implements PersistableEntity {
     @Column(name = "excluded")
     private Boolean excluded = false;
 
+    @OneToMany(mappedBy = "materialGroup",fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<MaterialGroupItemEntity> items = new ArrayList<>();
+
     @Override
     public UUID getId() {
         return id;
@@ -38,6 +40,6 @@ public class MaterialGroupEntity implements PersistableEntity {
     @Override
     public boolean setAsDeleted() {
         this.excluded = true;
-        return false;
+        return true;
     }
 }
