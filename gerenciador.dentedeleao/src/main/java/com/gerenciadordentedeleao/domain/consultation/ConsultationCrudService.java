@@ -126,6 +126,8 @@ public class ConsultationCrudService extends AbstractCrudService<ConsultationEnt
                 .orElseThrow(() -> new IllegalArgumentException("Consulta não encontrada com o ID: " + id));
         consultation.setConcluded(true);
 
+        consultationRepository.save(consultation);
+
         List<ConsultationMaterialEntity> consultationMaterialEntity = consultationMaterialRepository.findByIdReturnId(id);
 
         for (ConsultationMaterialEntity entity : consultationMaterialEntity) {
