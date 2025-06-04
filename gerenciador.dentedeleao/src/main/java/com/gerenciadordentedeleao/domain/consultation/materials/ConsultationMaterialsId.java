@@ -18,11 +18,15 @@ public class ConsultationMaterialsId implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ConsultationMaterialsId that = (ConsultationMaterialsId) o;
-        return consultationId.equals(that.consultationId) && materialId.equals(that.materialId);
+        return
+                (consultationId != null ? consultationId.equals(that.consultationId) : that.consultationId == null) &&
+                        (materialId != null ? materialId.equals(that.materialId) : that.materialId == null);
     }
 
     @Override
     public int hashCode() {
-        return consultationId.hashCode() + materialId.hashCode();
+        int result = (consultationId != null ? consultationId.hashCode() : 0);
+        result = 31 * result + (materialId != null ? materialId.hashCode() : 0);
+        return result;
     }
 }

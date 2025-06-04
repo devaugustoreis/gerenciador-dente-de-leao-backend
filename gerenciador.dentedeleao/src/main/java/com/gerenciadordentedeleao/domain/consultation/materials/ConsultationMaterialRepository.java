@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.UUID;
 
 public interface ConsultationMaterialRepository extends JpaRepository<ConsultationMaterialEntity, UUID> {
@@ -18,7 +19,15 @@ public interface ConsultationMaterialRepository extends JpaRepository<Consultati
     @Query("""
             SELECT consultationMaterial
             FROM ConsultationMaterialEntity consultationMaterial
-            WHERE consultationMaterial.consultation.id = :consultationId
+            WHERE consultationMaterial.id = :id
+            AND consultationMaterial.consultation.id = :consultationId
             """)
-    ConsultationMaterialEntity findByConsultationId(@Param("consultationId") UUID consultationId);
+    ConsultationMaterialEntity findByConsultationId(@Param("consultationId") UUID consultationId, @Param("id") ConsultationMaterialsId id);
+
+    @Query("""
+            SELECT consultationMaterial
+            FROM ConsultationMaterialEntity consultationMaterial
+            WHERE consultationMaterial.consultation.id = :id
+            """)
+    List<ConsultationMaterialEntity> findByIdReturnId(@Param("id") UUID id);
 }

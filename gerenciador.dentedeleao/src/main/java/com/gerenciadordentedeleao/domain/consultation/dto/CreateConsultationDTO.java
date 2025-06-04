@@ -8,7 +8,7 @@ import java.util.UUID;
 
 public record CreateConsultationDTO(
         String patientName,
-        Timestamp starDate,
+        Timestamp startDate,
         Timestamp  endDate,
         List<MaterialConsultationDTO> materials,
         UUID consultationTypeId) {

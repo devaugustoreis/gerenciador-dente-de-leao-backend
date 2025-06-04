@@ -7,10 +7,10 @@ import java.util.List;
 import java.util.UUID;
 
 public record UpdateConsultationDTO(
-        UUID consultation_id,
-        String patient_name,
-        Timestamp start_date,
-        Timestamp end_date,
+        UUID consultationId,
+        String patientName,
+        Timestamp startDate,
+        Timestamp endDate,
         List<MaterialConsultationDTO> materials,
-        UUID consultation_type_id) {
+        UUID consultationTypeId) {
 }

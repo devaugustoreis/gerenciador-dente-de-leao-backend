@@ -10,6 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 @RestController
 @RequestMapping(value = "/entities/consultation")
 public class ConsultationController extends AbstractController<ConsultationEntity> {
@@ -34,9 +36,9 @@ public class ConsultationController extends AbstractController<ConsultationEntit
         return ResponseEntity.ok(updatedConsultation);
     }
 
-    @DeleteMapping("/finalizar")
-    public ResponseEntity<Void> finalizarConsulta(@RequestBody UpdateConsultationDTO dto) {
-        consultationCrudService.finalizarConsulta(dto);
+    @DeleteMapping("/finalizar/{id}")
+    public ResponseEntity<Void> finalizarConsulta( @PathVariable("id") UUID id) {
+        consultationCrudService.finalizarConsulta(id);
         return ResponseEntity.noContent().build();
     }
 }
