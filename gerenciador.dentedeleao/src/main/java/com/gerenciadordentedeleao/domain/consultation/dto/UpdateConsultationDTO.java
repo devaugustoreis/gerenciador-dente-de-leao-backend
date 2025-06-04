@@ -1,6 +1,6 @@
 package com.gerenciadordentedeleao.domain.consultation.dto;
 
-import com.gerenciadordentedeleao.domain.material.dto.MaterialItemDTO;
+import com.gerenciadordentedeleao.domain.material.dto.MaterialConsultationDTO;
 
 import java.sql.Timestamp;
 import java.util.List;
@@ -11,6 +11,6 @@ public record UpdateConsultationDTO(
         String patient_name,
         Timestamp start_date,
         Timestamp end_date,
-        List<MaterialItemDTO> materials,
+        List<MaterialConsultationDTO> materials,
         UUID consultation_type_id) {
 }

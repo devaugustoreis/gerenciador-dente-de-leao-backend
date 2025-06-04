@@ -18,7 +18,7 @@ public class ConsultationEntity implements Persistable<UUID> {
 
     @Id
     @Column(name = "id", updatable = false)
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO, generator = "uuid2")
     private UUID id;
 
     @Column(name = "patient_name")
@@ -35,7 +35,7 @@ public class ConsultationEntity implements Persistable<UUID> {
 
     @ManyToOne
     @JoinColumn(name = "consultation_type_id", referencedColumnName = "id")
-    private ConsultationTypeEntity consultationTypeId;
+    private ConsultationTypeEntity consultationType;
 
     @Override
     public UUID getId() {
