@@ -1,0 +1,3 @@
+INSERT INTO dente_de_leao_manager.users (id,login,"password",full_name,user_role,excluded) VALUES
+                                                                                               ('d4b8ff0b-60ce-4051-9bbb-82a3abdd3645'::uuid,'admin','$2a$10$Vl2Xsz52rdsHJM7YCDuhru8PHcLoTRvTAvVoB6P3l.p1r6K2JgQEW','fulName','ADMIN',false),
+                                                                                               ('b791e890-ae04-43ac-ae88-58e362367ee4'::uuid,'augusto','$2a$10$gD9bxie3jwXRoEorbFs2OeJmguMBdThOnpivF7eN68fPOd4ggdiYS','fulName','ADMIN',false);
