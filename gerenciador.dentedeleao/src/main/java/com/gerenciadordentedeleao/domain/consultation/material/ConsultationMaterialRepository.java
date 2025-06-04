@@ -12,7 +12,7 @@ import java.util.UUID;
 public interface ConsultationMaterialRepository extends JpaRepository<ConsultationMaterialEntity, UUID> {
 
     @Query("""
-            select sum(consultationMaterial.quantity)
+            select coalesce(sum(consultationMaterial.quantity), 0)
             from ConsultationMaterialEntity consultationMaterial
             where consultationMaterial.material = :material and consultationMaterial.consultation.concluded = false
             """)
