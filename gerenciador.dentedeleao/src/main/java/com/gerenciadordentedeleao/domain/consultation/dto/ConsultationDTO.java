@@ -6,11 +6,10 @@ import java.sql.Timestamp;
 import java.util.List;
 import java.util.UUID;
 
-public record UpdateConsultationDTO(
-        UUID consultationId,
+public record ConsultationDTO(
         String patientName,
         Timestamp startDate,
-        Timestamp endDate,
+        Timestamp  endDate,
         List<MaterialConsultationDTO> materials,
         UUID consultationTypeId) {
 }

@@ -8,7 +8,7 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 import java.util.UUID;
 
-public interface ConsultationMaterialRepository extends JpaRepository<ConsultationMaterialEntity, UUID> {
+public interface ConsultationMaterialsRepository extends JpaRepository<ConsultationMaterialsEntity, UUID> {
     @Query("""
             SELECT SUM(consultationMaterial.quantity)
             FROM ConsultationMaterialEntity consultationMaterial
@@ -22,12 +22,12 @@ public interface ConsultationMaterialRepository extends JpaRepository<Consultati
             WHERE consultationMaterial.id = :id
             AND consultationMaterial.consultation.id = :consultationId
             """)
-    ConsultationMaterialEntity findByConsultationId(@Param("consultationId") UUID consultationId, @Param("id") ConsultationMaterialsId id);
+    ConsultationMaterialsEntity findByConsultationId(@Param("consultationId") UUID consultationId, @Param("id") ConsultationMaterialsId id);
 
     @Query("""
             SELECT consultationMaterial
             FROM ConsultationMaterialEntity consultationMaterial
             WHERE consultationMaterial.consultation.id = :id
             """)
-    List<ConsultationMaterialEntity> findByIdReturnId(@Param("id") UUID id);
+    List<ConsultationMaterialsEntity> findByIdReturnId(@Param("id") UUID id);
 }

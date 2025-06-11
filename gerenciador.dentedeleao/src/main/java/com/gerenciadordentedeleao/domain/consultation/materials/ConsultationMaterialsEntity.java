@@ -10,7 +10,7 @@ import lombok.Setter;
 @Table(name = "consultation_materials")
 @Setter
 @Getter
-public class ConsultationMaterialEntity {
+public class ConsultationMaterialsEntity {
 
     @EmbeddedId
     private ConsultationMaterialsId id;
