@@ -48,6 +48,18 @@ public class MaterialController {
         return ResponseEntity.ok(material);
     }
 
+    @GetMapping("und_restantes/{id}")
+    public ResponseEntity<Integer> findUndRestantesMaterial(@PathVariable UUID id) {
+        int und_restantes = materialCrudService.findById(id).map(MaterialEntity::getStockQuantity).orElseThrow(() -> new IllegalArgumentException("Material não encontrado com o ID: " + id));
+        return ResponseEntity.ok(und_restantes);
+    }
+
+    @GetMapping("agendado/{id}")
+    public ResponseEntity<Integer> findQuantidadeAgendadaMaterial(@PathVariable UUID id) {
+        int quantidadeAgendada = materialCrudService.findById(id).map(MaterialEntity::getScheduledQuantity).orElseThrow(() -> new IllegalArgumentException("Material não encontrado com o ID: " + id));
+        return ResponseEntity.ok(quantidadeAgendada);
+    }
+
     @PostMapping("/movement-stock/{id}")
     public ResponseEntity<MaterialEntity> movementStock(@PathVariable UUID id,@RequestBody MovementStockDTO dto) {
         MaterialEntity material = materialCrudService.movementStock(id, dto);

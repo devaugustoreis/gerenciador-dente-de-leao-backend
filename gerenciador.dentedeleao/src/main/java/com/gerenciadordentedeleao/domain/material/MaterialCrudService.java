@@ -78,6 +78,13 @@ public class MaterialCrudService {
         return repository.save(material);
     }
 
+    public void setScheduleQuantity(UUID materialId, int quantity) {
+        var material = repository.findById(materialId)
+                .orElseThrow(() -> new IllegalArgumentException("Material não encontrado com o ID: " + materialId));
+        material.setScheduledQuantity(quantity);
+        repository.save(material);
+    }
+
     public MaterialEntity movementStock(UUID id, MovementStockDTO dto) {
         var material = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Material", "ID", id));

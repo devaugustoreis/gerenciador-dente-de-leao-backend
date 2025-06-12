@@ -22,7 +22,7 @@ public class ConsultationTypeEntity implements PersistableEntity {
 
     @Id
     @Column(name = "id", updatable = false)
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO, generator = "uuid2")
     private UUID id;
 
     @Column(name = "label")
