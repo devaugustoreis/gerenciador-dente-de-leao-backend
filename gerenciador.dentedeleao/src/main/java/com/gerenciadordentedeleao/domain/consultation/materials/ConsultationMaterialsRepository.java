@@ -10,11 +10,11 @@ import java.util.UUID;
 
 public interface ConsultationMaterialsRepository extends JpaRepository<ConsultationMaterialsEntity, UUID> {
     @Query("""
-            SELECT SUM(consultationMaterial.quantity)
+            SELECT COALESCE(SUM(consultationMaterial.quantity), 0)
             FROM ConsultationMaterialEntity consultationMaterial
             WHERE consultationMaterial.material = :material AND consultationMaterial.consultation.concluded = false
             """)
-    Integer sumMaterialScheduleQuantity(@Param("material") MaterialEntity material);
+    Integer countByMaterialId(@Param("material") MaterialEntity material);
 
     @Query("""
             SELECT consultationMaterial

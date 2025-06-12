@@ -1,12 +1,12 @@
 package com.gerenciadordentedeleao.domain.consultation.materials;
 
+import com.gerenciadordentedeleao.application.errorhandler.ResourceNotFoundException;
 import com.gerenciadordentedeleao.domain.consultation.ConsultationEntity;
 import com.gerenciadordentedeleao.domain.consultation.dto.ConsultationDTO;
 import com.gerenciadordentedeleao.domain.material.MaterialCrudService;
 import com.gerenciadordentedeleao.domain.material.MaterialEntity;
 import com.gerenciadordentedeleao.domain.material.MaterialRepository;
 import com.gerenciadordentedeleao.domain.material.dto.MaterialConsultationDTO;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -27,7 +27,7 @@ public class ConsultationMaterialsCrudService {
     }
 
     public void getTotalFutureMaterialQuantity(UUID materialId, MaterialEntity material) {
-        Integer schedule_quantity = consultationMaterialRepository.sumMaterialScheduleQuantity(material);
+        Integer schedule_quantity = consultationMaterialRepository.countByMaterialId(material);
 
         if (schedule_quantity == null) {
             schedule_quantity = 0;
@@ -39,7 +39,7 @@ public class ConsultationMaterialsCrudService {
     public void createConsultationMaterials(ConsultationDTO dto, ConsultationEntity consultation) {
         for (MaterialConsultationDTO materialDTO : dto.materials()) {
             MaterialEntity material = materialRepository.findById(materialDTO.materialId())
-                    .orElseThrow(() -> new IllegalArgumentException("Material não encontrado com o ID: " + materialDTO.materialId()));
+                    .orElseThrow(() -> new ResourceNotFoundException("Material", "ID", materialDTO.materialId()));
 
             ConsultationMaterialsId id = new ConsultationMaterialsId();
             id.setConsultationId(consultation.getId());
@@ -60,7 +60,7 @@ public class ConsultationMaterialsCrudService {
     public void updateConsultationMaterials(ConsultationDTO dto, ConsultationEntity consultation) {
         for (MaterialConsultationDTO materialDTO : dto.materials()){
             MaterialEntity material = materialRepository.findById(materialDTO.materialId())
-                    .orElseThrow(() -> new IllegalArgumentException("Material não encontrado com o ID: " + materialDTO.materialId()));
+                    .orElseThrow(() -> new ResourceNotFoundException("Material", "ID", materialDTO.materialId()));
 
             ConsultationMaterialsId id = new ConsultationMaterialsId();
             id.setConsultationId(consultation.getId());

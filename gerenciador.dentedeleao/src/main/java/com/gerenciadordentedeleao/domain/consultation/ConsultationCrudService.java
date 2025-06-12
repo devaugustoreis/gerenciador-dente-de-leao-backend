@@ -1,6 +1,7 @@
 package com.gerenciadordentedeleao.domain.consultation;
 
 import com.gerenciadordentedeleao.application.abstractions.AbstractCrudService;
+import com.gerenciadordentedeleao.application.errorhandler.ResourceNotFoundException;
 import com.gerenciadordentedeleao.domain.consultation.dto.ConsultationDTO;
 import com.gerenciadordentedeleao.domain.consultation.materials.ConsultationMaterialsCrudService;
 import com.gerenciadordentedeleao.domain.consultation.materials.ConsultationMaterialsEntity;
@@ -38,7 +39,7 @@ public class ConsultationCrudService extends AbstractCrudService<ConsultationEnt
 
     public ConsultationEntity create(ConsultationDTO dto) {
         ConsultationTypeEntity consultationType = consultationTypeRepository.findById(dto.consultationTypeId())
-                .orElseThrow(() -> new IllegalArgumentException("Tipo de consulta não encontrado."));
+                .orElseThrow(() -> new ResourceNotFoundException("Tipo de consulta", "ID", dto.consultationTypeId()));
 
         ConsultationEntity consultation = new ConsultationEntity();
 
@@ -57,14 +58,14 @@ public class ConsultationCrudService extends AbstractCrudService<ConsultationEnt
 
     public ConsultationEntity update(ConsultationDTO dto, UUID id) {
         ConsultationEntity consultation = consultationRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Consulta não encontrada com o ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Consulta", "ID", id));
 
         consultation.setPatientName(dto.patientName());
         consultation.setStartDate(dto.startDate());
         consultation.setEndDate(dto.endDate());
 
         ConsultationTypeEntity consultationType = consultationTypeRepository.findById(dto.consultationTypeId())
-                .orElseThrow(() -> new IllegalArgumentException("Tipo de consulta não encontrado."));
+                .orElseThrow(() -> new ResourceNotFoundException("Tipo de consulta", "ID", dto.consultationTypeId()));
         consultation.setConsultationType(consultationType);
 
         consultation = repository.save(consultation);
@@ -77,7 +78,7 @@ public class ConsultationCrudService extends AbstractCrudService<ConsultationEnt
     public void finalizarConsulta(UUID id) {
 
         ConsultationEntity consultation = consultationRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Consulta não encontrada com o ID: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Consulta", "ID", id));
         consultation.setConcluded(true);
 
         consultationRepository.save(consultation);
@@ -86,7 +87,7 @@ public class ConsultationCrudService extends AbstractCrudService<ConsultationEnt
 
         for (ConsultationMaterialsEntity entity : consultationMaterialEntity) {
             MaterialEntity material = materialRepository.findById(entity.getMaterial().getId())
-                    .orElseThrow(() -> new IllegalArgumentException("Material não encontrado com o ID: " + entity.getMaterial().getId()));
+                    .orElseThrow(() -> new ResourceNotFoundException("Material", "ID", entity.getMaterial().getId()));
 
             consultationMaterialsCrudService.getTotalFutureMaterialQuantity(material.getId(), material);
         }

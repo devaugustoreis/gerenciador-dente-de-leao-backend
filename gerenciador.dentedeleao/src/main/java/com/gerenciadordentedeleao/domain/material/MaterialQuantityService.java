@@ -1,20 +1,20 @@
 package com.gerenciadordentedeleao.domain.material;
 
-import com.gerenciadordentedeleao.domain.consultation.material.ConsultationMaterialRepository;
+import com.gerenciadordentedeleao.domain.consultation.materials.ConsultationMaterialsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class MaterialQuantityService {
 
-    private final ConsultationMaterialRepository consultationMaterialRepository;
+    private final ConsultationMaterialsRepository consultationMaterialsRepository;
 
     @Autowired
-    public MaterialQuantityService(ConsultationMaterialRepository consultationMaterialRepository) {
-        this.consultationMaterialRepository = consultationMaterialRepository;
+    public MaterialQuantityService(ConsultationMaterialsRepository consultationMaterialsRepository) {
+        this.consultationMaterialsRepository = consultationMaterialsRepository;
     }
 
     public int calculateScheduledQuantity(MaterialEntity material) {
-        return consultationMaterialRepository.countByMaterialId(material);
+        return consultationMaterialsRepository.countByMaterialId(material);
     }
 }

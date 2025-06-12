@@ -1,7 +1,7 @@
 package com.gerenciadordentedeleao.domain.material;
 
 import com.gerenciadordentedeleao.domain.category.CategoryRepository;
-import com.gerenciadordentedeleao.domain.consultation.material.ConsultationMaterialRepository;
+import com.gerenciadordentedeleao.domain.consultation.materials.ConsultationMaterialsRepository;
 import com.gerenciadordentedeleao.domain.material.dto.CreateMaterialDTO;
 import com.gerenciadordentedeleao.domain.material.dto.MovementStockDTO;
 import com.gerenciadordentedeleao.domain.material.dto.UpdateMaterialDTO;
@@ -30,16 +30,16 @@ public class MaterialCrudService {
 
     private final MaterialHistoricRepository materialHistoricRepository;
 
-    private final ConsultationMaterialRepository consultationMaterialRepository;
+    private final ConsultationMaterialsRepository consultationMaterialsRepository;
 
     private final EnumMap<MovementType, BiConsumer<MaterialEntity, MovementStockDTO>> movementActions = new EnumMap<>(MovementType.class);
 
     @Autowired
-    public MaterialCrudService(MaterialRepository repository, CategoryRepository categoryRepository, MaterialHistoricRepository materialHistoricRepository, ConsultationMaterialRepository consultationMaterialRepository) {
+    public MaterialCrudService(MaterialRepository repository, CategoryRepository categoryRepository, MaterialHistoricRepository materialHistoricRepository, ConsultationMaterialsRepository consultationMaterialsRepository) {
         this.repository = repository;
         this.categoryRepository = categoryRepository;
         this.materialHistoricRepository = materialHistoricRepository;
-        this.consultationMaterialRepository = consultationMaterialRepository;
+        this.consultationMaterialsRepository = consultationMaterialsRepository;
         movementActions.put(MovementType.ADDITION, this::additionMovementation);
         movementActions.put(MovementType.REMOVAL, this::removalMovementation);
     }
@@ -80,7 +80,7 @@ public class MaterialCrudService {
 
     public void setScheduleQuantity(UUID materialId, int quantity) {
         var material = repository.findById(materialId)
-                .orElseThrow(() -> new IllegalArgumentException("Material não encontrado com o ID: " + materialId));
+                .orElseThrow(() -> new ResourceNotFoundException("Material", "ID", materialId));
         material.setScheduledQuantity(quantity);
         repository.save(material);
     }
@@ -110,7 +110,7 @@ public class MaterialCrudService {
         }
 
         material.setStockQuantity(stockQuantity - dto.quantity());
-        material.setScheduledQuantity(consultationMaterialRepository.countByMaterialId(material));
+        material.setScheduledQuantity(consultationMaterialsRepository.countByMaterialId(material));
     }
 
     private void createMovementHistoric(MovementStockDTO dto, MaterialEntity material) {
