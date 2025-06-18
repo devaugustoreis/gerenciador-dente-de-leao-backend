@@ -21,6 +21,7 @@ import org.hibernate.annotations.FilterDef;
 import org.springframework.data.domain.Persistable;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -49,6 +50,9 @@ public class MaterialEntity implements Persistable<UUID> {
 
     @Column(name = "scheduled_quantity")
     private Integer scheduledQuantity;
+
+    @Column(name = "expected_end_date")
+    private Date expectedEndDate;
 
     @Column(name = "alert_quantity")
     private Integer alertQuantity;

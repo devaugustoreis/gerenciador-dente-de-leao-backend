@@ -9,6 +9,7 @@ import com.gerenciadordentedeleao.domain.material.MaterialRepository;
 import com.gerenciadordentedeleao.domain.material.dto.MaterialConsultationDTO;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.UUID;
 
 @Service
@@ -54,6 +55,9 @@ public class ConsultationMaterialsCrudService {
             consultationMaterialRepository.save(consultationMaterialEntity);
 
             getTotalFutureMaterialQuantity(materialDTO.materialId(), material);
+
+            Date endDate = new Date(dto.endDate().getTime());
+            materialCrudService.setExpectedEndDate(material, endDate);
         }
     }
 
@@ -74,6 +78,9 @@ public class ConsultationMaterialsCrudService {
             consultationMaterialRepository.save(consultationMaterialEntity);
 
             getTotalFutureMaterialQuantity(materialDTO.materialId(), material);
+
+            Date endDate = new Date(dto.endDate().getTime());
+            materialCrudService.setExpectedEndDate(material, endDate);
         }
     }
 

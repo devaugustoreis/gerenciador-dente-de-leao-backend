@@ -28,13 +28,13 @@ public class ConsultationCrudService extends AbstractCrudService<ConsultationEnt
 
     private final ConsultationRepository consultationRepository;
 
-    public ConsultationCrudService(ConsultationRepository consultationRepository, ConsultationMaterialsCrudService consultationMaterialsCrudService, ConsultationMaterialsRepository consultationMaterialRepository, ConsultationTypeRepository consultationTypeRepository, MaterialRepository materialRepository, ConsultationRepository consultationRepository1) {
+    public ConsultationCrudService(ConsultationRepository consultationRepository, ConsultationMaterialsCrudService consultationMaterialsCrudService, ConsultationMaterialsRepository consultationMaterialRepository, ConsultationTypeRepository consultationTypeRepository, MaterialRepository materialRepository) {
         super(consultationRepository);
         this.consultationMaterialsCrudService = consultationMaterialsCrudService;
         this.consultationMaterialRepository = consultationMaterialRepository;
         this.consultationTypeRepository = consultationTypeRepository;
         this.materialRepository = materialRepository;
-        this.consultationRepository = consultationRepository1;
+        this.consultationRepository = consultationRepository;
     }
 
     public ConsultationEntity create(ConsultationDTO dto) {

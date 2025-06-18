@@ -1,0 +1,1 @@
+ALTER TABLE dente_de_leao_manager.materials ADD COLUMN expected_end_date DATE;

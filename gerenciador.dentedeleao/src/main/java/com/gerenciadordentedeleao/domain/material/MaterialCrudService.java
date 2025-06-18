@@ -15,10 +15,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.EnumMap;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.BiConsumer;
 
 @Service
@@ -75,13 +72,25 @@ public class MaterialCrudService {
         material.setName(dto.name());
         material.setCategory(category);
 
+        setExpectedEndDate(material, null);
+
         return repository.save(material);
     }
 
     public void setScheduleQuantity(UUID materialId, int quantity) {
-        var material = repository.findById(materialId)
+        MaterialEntity material = repository.findById(materialId)
                 .orElseThrow(() -> new ResourceNotFoundException("Material", "ID", materialId));
         material.setScheduledQuantity(quantity);
+        repository.save(material);
+    }
+
+    public void setExpectedEndDate(MaterialEntity material, Date expectedEndDate) {
+        if (material.getScheduledQuantity() >= material.getStockQuantity() && material.getExpectedEndDate() == null && expectedEndDate != null) {
+            material.setExpectedEndDate(expectedEndDate);
+        }else if (material.getScheduledQuantity() < material.getStockQuantity() && material.getExpectedEndDate() != null){
+            material.setExpectedEndDate(null);
+        }
+
         repository.save(material);
     }
 
