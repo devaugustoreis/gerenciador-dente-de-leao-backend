@@ -72,8 +72,6 @@ public class MaterialCrudService {
         material.setName(dto.name());
         material.setCategory(category);
 
-        setExpectedEndDate(material, null);
-
         return repository.save(material);
     }
 
@@ -105,6 +103,7 @@ public class MaterialCrudService {
         movementActions.get(dto.movementType()).accept(material, dto);
 
         createMovementHistoric(dto, material);
+        setExpectedEndDate(material, null);
         return repository.save(material);
     }
 
