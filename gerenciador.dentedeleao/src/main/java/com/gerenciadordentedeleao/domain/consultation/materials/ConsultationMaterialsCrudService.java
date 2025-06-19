@@ -7,9 +7,11 @@ import com.gerenciadordentedeleao.domain.material.MaterialCrudService;
 import com.gerenciadordentedeleao.domain.material.MaterialEntity;
 import com.gerenciadordentedeleao.domain.material.MaterialRepository;
 import com.gerenciadordentedeleao.domain.material.dto.MaterialConsultationDTO;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -82,6 +84,23 @@ public class ConsultationMaterialsCrudService {
             Date endDate = new Date(dto.endDate().getTime());
             materialCrudService.setExpectedEndDate(material, endDate);
         }
+    }
+
+    public Date findExpectedEndDate(MaterialEntity material){
+        List<Object[]> quantityMaterialsList = consultationMaterialRepository.getMaterialsQuantities(material);
+        Integer totalQuantity = 0;
+        Date expectedEndDate = null;
+
+        for (Object[] row : quantityMaterialsList){
+            totalQuantity += (Integer) row[0];
+
+            if (totalQuantity >= material.getStockQuantity()){
+                expectedEndDate = (Date) row[1];
+                break;
+            }
+        }
+
+        return expectedEndDate;
     }
 
 }

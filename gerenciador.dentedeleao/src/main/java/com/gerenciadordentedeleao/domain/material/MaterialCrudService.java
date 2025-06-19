@@ -1,6 +1,7 @@
 package com.gerenciadordentedeleao.domain.material;
 
 import com.gerenciadordentedeleao.domain.category.CategoryRepository;
+import com.gerenciadordentedeleao.domain.consultation.materials.ConsultationMaterialsCrudService;
 import com.gerenciadordentedeleao.domain.consultation.materials.ConsultationMaterialsRepository;
 import com.gerenciadordentedeleao.domain.material.dto.CreateMaterialDTO;
 import com.gerenciadordentedeleao.domain.material.dto.MovementStockDTO;
@@ -11,6 +12,7 @@ import com.gerenciadordentedeleao.domain.material.historic.MovementType;
 import com.gerenciadordentedeleao.application.errorhandler.BusinessException;
 import com.gerenciadordentedeleao.application.errorhandler.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
@@ -29,14 +31,17 @@ public class MaterialCrudService {
 
     private final ConsultationMaterialsRepository consultationMaterialsRepository;
 
+    private final ConsultationMaterialsCrudService consultationMaterialsCrudService;
+
     private final EnumMap<MovementType, BiConsumer<MaterialEntity, MovementStockDTO>> movementActions = new EnumMap<>(MovementType.class);
 
     @Autowired
-    public MaterialCrudService(MaterialRepository repository, CategoryRepository categoryRepository, MaterialHistoricRepository materialHistoricRepository, ConsultationMaterialsRepository consultationMaterialsRepository) {
+    public MaterialCrudService(MaterialRepository repository, CategoryRepository categoryRepository, MaterialHistoricRepository materialHistoricRepository, ConsultationMaterialsRepository consultationMaterialsRepository, ConsultationMaterialsCrudService consultationMaterialsCrudService) {
         this.repository = repository;
         this.categoryRepository = categoryRepository;
         this.materialHistoricRepository = materialHistoricRepository;
         this.consultationMaterialsRepository = consultationMaterialsRepository;
+        this.consultationMaterialsCrudService = consultationMaterialsCrudService;
         movementActions.put(MovementType.ADDITION, this::additionMovementation);
         movementActions.put(MovementType.REMOVAL, this::removalMovementation);
     }
@@ -83,7 +88,15 @@ public class MaterialCrudService {
     }
 
     public void setExpectedEndDate(MaterialEntity material, Date expectedEndDate) {
-        if (material.getScheduledQuantity() >= material.getStockQuantity() && material.getExpectedEndDate() == null && expectedEndDate != null) {
+        if (material.getScheduledQuantity() >= material.getStockQuantity() && material.getExpectedEndDate() == null) {
+
+            // TODO: Ajustar erro de dependencias ou aplicar outra lógica
+//            Caso o estoque seja reduzido para um valor menor do que a quantdade agendada, é precido
+//            calcular a data esperada de término.
+            if (expectedEndDate == null){
+                expectedEndDate = consultationMaterialsCrudService.findExpectedEndDate(material);
+            }
+
             material.setExpectedEndDate(expectedEndDate);
         }else if (material.getScheduledQuantity() < material.getStockQuantity() && material.getExpectedEndDate() != null){
             material.setExpectedEndDate(null);

@@ -30,4 +30,14 @@ public interface ConsultationMaterialsRepository extends JpaRepository<Consultat
             WHERE consultationMaterial.consultation.id = :id
             """)
     List<ConsultationMaterialsEntity> findByIdReturnId(@Param("id") UUID id);
+
+    @Query(
+            """
+            SELECT consultationMaterial.quantity, FUNCTION('DATE', consultationMaterial.consultation.endDate)
+            FROM ConsultationMaterialEntity consultationMaterial
+            WHERE consultationMaterial.material = :material
+            ORDER BY consultationMaterial.consultation.startDate
+            """
+    )
+    List<Object[]> getMaterialsQuantities(@Param("material") MaterialEntity material);
 }
