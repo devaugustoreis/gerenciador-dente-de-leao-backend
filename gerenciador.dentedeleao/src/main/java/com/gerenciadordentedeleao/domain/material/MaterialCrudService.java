@@ -89,12 +89,9 @@ public class MaterialCrudService {
         repository.save(material);
     }
 
-    public void setExpectedEndDate(MaterialEntity material, Date expectedEndDate) {
+    public MaterialEntity setExpectedEndDate(MaterialEntity material, Date expectedEndDate) {
         if (material.getScheduledQuantity() >= material.getStockQuantity() && material.getExpectedEndDate() == null) {
 
-            // TODO: Ajustar erro de dependencias ou aplicar outra lógica
-//            Caso o estoque seja reduzido para um valor menor do que a quantdade agendada, é precido
-//            calcular a data esperada de término.
             if (expectedEndDate == null){
                 expectedEndDate = consultationMaterialsCrudService.findExpectedEndDate(material);
             }
@@ -104,7 +101,7 @@ public class MaterialCrudService {
             material.setExpectedEndDate(null);
         }
 
-        repository.save(material);
+        return material;
     }
 
     public MaterialEntity movementStock(UUID id, MovementStockDTO dto) {
@@ -118,7 +115,7 @@ public class MaterialCrudService {
         movementActions.get(dto.movementType()).accept(material, dto);
 
         createMovementHistoric(dto, material);
-        setExpectedEndDate(material, null);
+        material = setExpectedEndDate(material, null);
         return repository.save(material);
     }
 

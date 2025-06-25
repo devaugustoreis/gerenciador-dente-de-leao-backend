@@ -59,7 +59,7 @@ public class ConsultationMaterialsCrudService {
             getTotalFutureMaterialQuantity(materialDTO.materialId(), material);
 
             Date endDate = new Date(dto.endDate().getTime());
-            materialCrudService.setExpectedEndDate(material, endDate);
+            materialRepository.save(materialCrudService.setExpectedEndDate(material, endDate));
         }
     }
 
@@ -82,25 +82,23 @@ public class ConsultationMaterialsCrudService {
             getTotalFutureMaterialQuantity(materialDTO.materialId(), material);
 
             Date endDate = new Date(dto.endDate().getTime());
-            materialCrudService.setExpectedEndDate(material, endDate);
+            materialRepository.save(materialCrudService.setExpectedEndDate(material, endDate));
         }
     }
 
     public Date findExpectedEndDate(MaterialEntity material){
         List<Object[]> quantityMaterialsList = consultationMaterialRepository.getMaterialsQuantities(material);
-        Integer totalQuantity = 0;
-        Date expectedEndDate = null;
+        int totalQuantity = 0;
 
         for (Object[] row : quantityMaterialsList){
             totalQuantity += (Integer) row[0];
 
             if (totalQuantity >= material.getStockQuantity()){
-                expectedEndDate = (Date) row[1];
-                break;
+                return (Date) row[1];
             }
         }
 
-        return expectedEndDate;
+        return null;
     }
 
 }
