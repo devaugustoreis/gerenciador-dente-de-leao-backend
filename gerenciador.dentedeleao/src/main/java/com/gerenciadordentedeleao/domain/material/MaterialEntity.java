@@ -3,17 +3,7 @@ package com.gerenciadordentedeleao.domain.material;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.gerenciadordentedeleao.domain.category.CategoryEntity;
 import com.gerenciadordentedeleao.domain.material.historic.MaterialHistoricEntity;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.Filter;
@@ -64,6 +54,10 @@ public class MaterialEntity implements Persistable<UUID> {
     @OneToMany(mappedBy = "material",fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private List<MaterialHistoricEntity> materialHistoric = new ArrayList<>();
+
+    @Lob
+    @Column(name = "imagem")
+    private byte[] image;
 
     @Override
     public UUID getId() {

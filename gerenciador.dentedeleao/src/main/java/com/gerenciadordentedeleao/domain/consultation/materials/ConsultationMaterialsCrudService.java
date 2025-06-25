@@ -23,7 +23,7 @@ public class ConsultationMaterialsCrudService {
 
     private final MaterialRepository materialRepository;
 
-    public ConsultationMaterialsCrudService(MaterialCrudService materialCrudService, ConsultationMaterialsRepository consultationMaterialRepository, MaterialRepository materialRepository) {
+     public ConsultationMaterialsCrudService(@Lazy MaterialCrudService materialCrudService, ConsultationMaterialsRepository consultationMaterialRepository, MaterialRepository materialRepository) {
         this.materialCrudService = materialCrudService;
         this.consultationMaterialRepository = consultationMaterialRepository;
         this.materialRepository = materialRepository;

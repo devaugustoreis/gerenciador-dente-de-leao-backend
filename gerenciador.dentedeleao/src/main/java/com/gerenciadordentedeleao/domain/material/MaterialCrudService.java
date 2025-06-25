@@ -15,7 +15,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.function.BiConsumer;
@@ -36,7 +38,7 @@ public class MaterialCrudService {
     private final EnumMap<MovementType, BiConsumer<MaterialEntity, MovementStockDTO>> movementActions = new EnumMap<>(MovementType.class);
 
     @Autowired
-    public MaterialCrudService(MaterialRepository repository, CategoryRepository categoryRepository, MaterialHistoricRepository materialHistoricRepository, ConsultationMaterialsRepository consultationMaterialsRepository, ConsultationMaterialsCrudService consultationMaterialsCrudService) {
+    public MaterialCrudService(MaterialRepository repository, CategoryRepository categoryRepository, MaterialHistoricRepository materialHistoricRepository, ConsultationMaterialsRepository consultationMaterialsRepository, @Lazy ConsultationMaterialsCrudService consultationMaterialsCrudService) {
         this.repository = repository;
         this.categoryRepository = categoryRepository;
         this.materialHistoricRepository = materialHistoricRepository;
@@ -156,6 +158,16 @@ public class MaterialCrudService {
                     repository.save(material);
                 }
             }
+        }
+    }
+
+    public void uploadImage(UUID id, MultipartFile arquivo) {
+        var material = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Material", "ID", id));
+        try {
+            material.setImage(arquivo.getBytes());
+            repository.save(material);
+        } catch (IOException e) {
+            throw new BusinessException("Erro ao salvar a imagem do material: " + e.getMessage());
         }
     }
 }
