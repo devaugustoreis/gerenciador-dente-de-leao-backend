@@ -54,12 +54,12 @@ public class UserController {
         userRepository.save(user);
     }
 
-    @PutMapping("{username}")
-    public void updatePassword(@PathVariable String username, @RequestBody UpdatePasswordDTO dto) {
-        var optionalUser = userRepository.findByLogin(username);
+    @PutMapping(value = "/updatePassword")
+    public void updatePassword(@RequestBody UpdatePasswordDTO dto) {
+        var optionalUser = userRepository.findByLogin(dto.username());
         UserEntity user = optionalUser.get();
 
-        var userNamePassword = new UsernamePasswordAuthenticationToken(username, dto.oldPassword());
+        var userNamePassword = new UsernamePasswordAuthenticationToken(dto.username(), dto.oldPassword());
         authenticationManager.authenticate(userNamePassword);
 
         user.setPassword(dto.newPassword());
