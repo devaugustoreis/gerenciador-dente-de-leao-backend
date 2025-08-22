@@ -1,18 +1,20 @@
 package com.gerenciadordentedeleao.domain.user;
 
 import com.gerenciadordentedeleao.application.authorization.TokenService;
+import com.gerenciadordentedeleao.domain.material.MaterialEntity;
+import com.gerenciadordentedeleao.domain.material.dto.UpdateMaterialDTO;
 import com.gerenciadordentedeleao.domain.user.dto.RequestLoginDTO;
 import com.gerenciadordentedeleao.domain.user.dto.ResponseLoginDTO;
+import com.gerenciadordentedeleao.domain.user.dto.UpdatePasswordDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
 
 @RestController
 @RequestMapping(value = "/user")
@@ -49,6 +51,18 @@ public class UserController {
         user.setPassword(encoder.encode(request.password()));
         user.setRole(UserRole.ADMIN);
         user.setFullName("fulName");
+        userRepository.save(user);
+    }
+
+    @PutMapping("{username}")
+    public void updatePassword(@PathVariable String username, @RequestBody UpdatePasswordDTO dto) {
+        var optionalUser = userRepository.findByLogin(username);
+        UserEntity user = optionalUser.get();
+
+        var userNamePassword = new UsernamePasswordAuthenticationToken(username, dto.oldPassword());
+        authenticationManager.authenticate(userNamePassword);
+
+        user.setPassword(dto.newPassword());
         userRepository.save(user);
     }
 }
