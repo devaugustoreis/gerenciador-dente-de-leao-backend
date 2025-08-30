@@ -6,7 +6,7 @@ import java.sql.Timestamp;
 import java.util.List;
 import java.util.UUID;
 
-public record ConsultationDTO(
+public record PlayloadConsultationDTO(
         String patientName,
         Timestamp startDate,
         Timestamp  endDate,

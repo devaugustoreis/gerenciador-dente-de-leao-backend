@@ -2,7 +2,8 @@ package com.gerenciadordentedeleao.domain.consultation;
 
 import com.gerenciadordentedeleao.application.abstractions.AbstractCrudService;
 import com.gerenciadordentedeleao.application.errorhandler.ResourceNotFoundException;
-import com.gerenciadordentedeleao.domain.consultation.dto.ConsultationDTO;
+import com.gerenciadordentedeleao.domain.consultation.dto.PlayloadConsultationDTO;
+import com.gerenciadordentedeleao.domain.consultation.dto.ResponseConsultationDTO;
 import com.gerenciadordentedeleao.domain.consultation.materials.ConsultationMaterialsCrudService;
 import com.gerenciadordentedeleao.domain.consultation.materials.ConsultationMaterialsEntity;
 import com.gerenciadordentedeleao.domain.consultation.materials.ConsultationMaterialsRepository;
@@ -37,7 +38,7 @@ public class ConsultationCrudService extends AbstractCrudService<ConsultationEnt
         this.consultationRepository = consultationRepository;
     }
 
-    public ConsultationEntity create(ConsultationDTO dto) {
+    public ResponseConsultationDTO create(PlayloadConsultationDTO dto) {
         ConsultationTypeEntity consultationType = consultationTypeRepository.findById(dto.consultationTypeId())
                 .orElseThrow(() -> new ResourceNotFoundException("Tipo de consulta", "ID", dto.consultationTypeId()));
 
@@ -52,11 +53,19 @@ public class ConsultationCrudService extends AbstractCrudService<ConsultationEnt
 
         consultationMaterialsCrudService.createConsultationMaterials(dto, consultation);
 
-        return consultation;
+        return new ResponseConsultationDTO(
+                consultation.getPatientName(),
+                consultation.getStartDate(),
+                consultation.getEndDate(),
+                dto.materials(),
+                consultation.getConsultationType().getId(),
+                consultation.getId(),
+                consultation.getConcluded()
+        );
     }
 
 
-    public ConsultationEntity update(ConsultationDTO dto, UUID id) {
+    public ResponseConsultationDTO update(PlayloadConsultationDTO dto, UUID id) {
         ConsultationEntity consultation = consultationRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Consulta", "ID", id));
 
@@ -72,7 +81,15 @@ public class ConsultationCrudService extends AbstractCrudService<ConsultationEnt
 
         consultationMaterialsCrudService.updateConsultationMaterials(dto, consultation);
 
-        return consultation;
+        return new ResponseConsultationDTO(
+                consultation.getPatientName(),
+                consultation.getStartDate(),
+                consultation.getEndDate(),
+                dto.materials(),
+                consultation.getConsultationType().getId(),
+                consultation.getId(),
+                consultation.getConcluded()
+        );
     }
 
     public void finalizarConsulta(UUID id) {

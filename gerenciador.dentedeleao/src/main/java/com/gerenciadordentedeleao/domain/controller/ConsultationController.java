@@ -3,7 +3,8 @@ package com.gerenciadordentedeleao.domain.controller;
 import com.gerenciadordentedeleao.application.abstractions.AbstractController;
 import com.gerenciadordentedeleao.domain.consultation.ConsultationCrudService;
 import com.gerenciadordentedeleao.domain.consultation.ConsultationEntity;
-import com.gerenciadordentedeleao.domain.consultation.dto.ConsultationDTO;
+import com.gerenciadordentedeleao.domain.consultation.dto.PlayloadConsultationDTO;
+import com.gerenciadordentedeleao.domain.consultation.dto.ResponseConsultationDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,15 +25,15 @@ public class ConsultationController extends AbstractController<ConsultationEntit
     }
 
     @PostMapping("/create")
-    public ResponseEntity<ConsultationEntity> create(@RequestBody ConsultationDTO dto){
-        ConsultationEntity newConsultation = consultationCrudService.create(dto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(newConsultation);
+    public ResponseEntity<ResponseConsultationDTO> create(@RequestBody PlayloadConsultationDTO dto){
+        ResponseConsultationDTO responseConsultationDTO = consultationCrudService.create(dto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(responseConsultationDTO);
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<ConsultationEntity> update(@PathVariable("id") UUID id, @RequestBody ConsultationDTO dto) {
-        ConsultationEntity updatedConsultation = consultationCrudService.update(dto, id);
-        return ResponseEntity.ok(updatedConsultation);
+    public ResponseEntity<ResponseConsultationDTO> update(@PathVariable("id") UUID id, @RequestBody PlayloadConsultationDTO dto) {
+        ResponseConsultationDTO responseConsultationDTO = consultationCrudService.update(dto, id);
+        return ResponseEntity.ok(responseConsultationDTO);
     }
 
     @DeleteMapping("/finalizar/{id}")

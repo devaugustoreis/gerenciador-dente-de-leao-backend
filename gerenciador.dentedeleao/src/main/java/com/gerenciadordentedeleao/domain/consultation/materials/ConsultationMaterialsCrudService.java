@@ -2,7 +2,7 @@ package com.gerenciadordentedeleao.domain.consultation.materials;
 
 import com.gerenciadordentedeleao.application.errorhandler.ResourceNotFoundException;
 import com.gerenciadordentedeleao.domain.consultation.ConsultationEntity;
-import com.gerenciadordentedeleao.domain.consultation.dto.ConsultationDTO;
+import com.gerenciadordentedeleao.domain.consultation.dto.PlayloadConsultationDTO;
 import com.gerenciadordentedeleao.domain.material.MaterialCrudService;
 import com.gerenciadordentedeleao.domain.material.MaterialEntity;
 import com.gerenciadordentedeleao.domain.material.MaterialRepository;
@@ -39,7 +39,7 @@ public class ConsultationMaterialsCrudService {
         materialCrudService.setScheduleQuantity( materialId, schedule_quantity);
     }
 
-    public void createConsultationMaterials(ConsultationDTO dto, ConsultationEntity consultation) {
+    public void createConsultationMaterials(PlayloadConsultationDTO dto, ConsultationEntity consultation) {
         for (MaterialConsultationDTO materialDTO : dto.materials()) {
             MaterialEntity material = materialRepository.findById(materialDTO.materialId())
                     .orElseThrow(() -> new ResourceNotFoundException("Material", "ID", materialDTO.materialId()));
@@ -63,7 +63,7 @@ public class ConsultationMaterialsCrudService {
         }
     }
 
-    public void updateConsultationMaterials(ConsultationDTO dto, ConsultationEntity consultation) {
+    public void updateConsultationMaterials(PlayloadConsultationDTO dto, ConsultationEntity consultation) {
         for (MaterialConsultationDTO materialDTO : dto.materials()){
             MaterialEntity material = materialRepository.findById(materialDTO.materialId())
                     .orElseThrow(() -> new ResourceNotFoundException("Material", "ID", materialDTO.materialId()));
