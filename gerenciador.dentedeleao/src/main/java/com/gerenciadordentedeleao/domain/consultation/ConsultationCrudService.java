@@ -1,6 +1,6 @@
 package com.gerenciadordentedeleao.domain.consultation;
 
-import com.gerenciadordentedeleao.application.abstractions.AbstractCrudService;
+import com.gerenciadordentedeleao.application.errorhandler.BusinessException;
 import com.gerenciadordentedeleao.application.errorhandler.ResourceNotFoundException;
 import com.gerenciadordentedeleao.domain.consultation.dto.PlayloadConsultationDTO;
 import com.gerenciadordentedeleao.domain.consultation.dto.ResponseConsultationDTO;
@@ -11,13 +11,15 @@ import com.gerenciadordentedeleao.domain.consultation.type.ConsultationTypeEntit
 import com.gerenciadordentedeleao.domain.consultation.type.ConsultationTypeRepository;
 import com.gerenciadordentedeleao.domain.material.MaterialEntity;
 import com.gerenciadordentedeleao.domain.material.MaterialRepository;
-import org.springframework.stereotype.Service;
+import com.gerenciadordentedeleao.domain.material.dto.MaterialConsultationDTO;
 
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.stereotype.Service;
+
 @Service
-public class ConsultationCrudService extends AbstractCrudService<ConsultationEntity> {
+public class ConsultationCrudService {
 
     private final ConsultationMaterialsCrudService consultationMaterialsCrudService;
 
@@ -30,12 +32,21 @@ public class ConsultationCrudService extends AbstractCrudService<ConsultationEnt
     private final ConsultationRepository consultationRepository;
 
     public ConsultationCrudService(ConsultationRepository consultationRepository, ConsultationMaterialsCrudService consultationMaterialsCrudService, ConsultationMaterialsRepository consultationMaterialRepository, ConsultationTypeRepository consultationTypeRepository, MaterialRepository materialRepository) {
-        super(consultationRepository);
         this.consultationMaterialsCrudService = consultationMaterialsCrudService;
         this.consultationMaterialRepository = consultationMaterialRepository;
         this.consultationTypeRepository = consultationTypeRepository;
         this.materialRepository = materialRepository;
         this.consultationRepository = consultationRepository;
+    }
+
+    public ResponseConsultationDTO findById(UUID id) {
+        var consultation = consultationRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Consulta", "ID", id));
+        return createResponseConsultationDTO(consultation);
+    }
+
+    public List<ResponseConsultationDTO> findAll() {
+        var consultations = consultationRepository.findAll();
+        return consultations.stream().map(ConsultationCrudService::createResponseConsultationDTO).toList();
     }
 
     public ResponseConsultationDTO create(PlayloadConsultationDTO dto) {
@@ -49,19 +60,11 @@ public class ConsultationCrudService extends AbstractCrudService<ConsultationEnt
         consultation.setEndDate(dto.endDate());
         consultation.setConsultationType(consultationType);
 
-        consultation = repository.save(consultation);
+        consultation = consultationRepository.save(consultation);
 
         consultationMaterialsCrudService.createConsultationMaterials(dto, consultation);
 
-        return new ResponseConsultationDTO(
-                consultation.getPatientName(),
-                consultation.getStartDate(),
-                consultation.getEndDate(),
-                dto.materials(),
-                consultation.getConsultationType().getId(),
-                consultation.getId(),
-                consultation.getConcluded()
-        );
+        return createResponseConsultationDTO(consultation);
     }
 
 
@@ -77,15 +80,22 @@ public class ConsultationCrudService extends AbstractCrudService<ConsultationEnt
                 .orElseThrow(() -> new ResourceNotFoundException("Tipo de consulta", "ID", dto.consultationTypeId()));
         consultation.setConsultationType(consultationType);
 
-        consultation = repository.save(consultation);
+        consultation = consultationRepository.save(consultation);
 
         consultationMaterialsCrudService.updateConsultationMaterials(dto, consultation);
 
+        return createResponseConsultationDTO(consultation);
+    }
+
+    private static ResponseConsultationDTO createResponseConsultationDTO(ConsultationEntity consultation) {
+        List<MaterialConsultationDTO> materials = consultation.getMaterials().stream()
+                .map(m -> new MaterialConsultationDTO(m.getMaterial().getId(), m.getQuantity()))
+                .toList();
         return new ResponseConsultationDTO(
                 consultation.getPatientName(),
                 consultation.getStartDate(),
                 consultation.getEndDate(),
-                dto.materials(),
+                materials,
                 consultation.getConsultationType().getId(),
                 consultation.getId(),
                 consultation.getConcluded()
@@ -110,8 +120,4 @@ public class ConsultationCrudService extends AbstractCrudService<ConsultationEnt
         }
     }
 
-    @Override
-    public String getEntityName() {
-        return "Consulta";
-    }
 }
