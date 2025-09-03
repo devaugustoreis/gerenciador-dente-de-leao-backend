@@ -1,5 +1,6 @@
 package com.gerenciadordentedeleao.domain.consultation.materials;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.gerenciadordentedeleao.domain.consultation.ConsultationEntity;
 import com.gerenciadordentedeleao.domain.material.MaterialEntity;
 import jakarta.persistence.*;
@@ -21,6 +22,7 @@ public class ConsultationMaterialsEntity {
     @ManyToOne
     @MapsId("consultationId")
     @JoinColumn(name = "consultation_id", referencedColumnName = "id")
+    @JsonIgnore
     private ConsultationEntity consultation;
 
     @ManyToOne
