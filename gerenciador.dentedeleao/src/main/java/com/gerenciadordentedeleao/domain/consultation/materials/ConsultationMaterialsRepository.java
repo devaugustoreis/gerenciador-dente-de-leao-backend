@@ -2,8 +2,10 @@ package com.gerenciadordentedeleao.domain.consultation.materials;
 
 import com.gerenciadordentedeleao.domain.material.MaterialEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
@@ -40,4 +42,11 @@ public interface ConsultationMaterialsRepository extends JpaRepository<Consultat
             """
     )
     List<Object[]> getMaterialsQuantities(@Param("material") MaterialEntity material);
+
+    @Modifying
+    @Transactional
+    @Query("DELETE FROM ConsultationMaterialEntity consultationMaterial " +
+            "WHERE consultationMaterial.consultation.id = :consultationId " +
+            "AND consultationMaterial.material.id = :materialId")
+    void deleteByConsultationAndMaterial(@Param("consultationId") UUID consultationId, @Param("materialId") UUID materialId);
 }

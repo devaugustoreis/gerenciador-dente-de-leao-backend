@@ -1,5 +1,6 @@
 package com.gerenciadordentedeleao.domain.consultation.materials;
 
+import jakarta.persistence.Embeddable;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -9,6 +10,7 @@ import java.util.UUID;
 
 @Getter
 @Setter
+@Embeddable
 public class ConsultationMaterialsId implements Serializable {
     private UUID consultationId;
     private UUID materialId;

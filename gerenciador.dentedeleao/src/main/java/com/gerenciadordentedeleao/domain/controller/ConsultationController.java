@@ -42,19 +42,19 @@ public class ConsultationController {
         return ResponseEntity.ok(responseConsultationDTOList);
     }
 
-    @PostMapping("/create")
+    @PostMapping()
     public ResponseEntity<ResponseConsultationDTO> create(@RequestBody PlayloadConsultationDTO dto) {
         ResponseConsultationDTO responseConsultationDTO = consultationCrudService.create(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(responseConsultationDTO);
     }
 
-    @PutMapping("/update/{id}")
+    @PutMapping("{id}")
     public ResponseEntity<ResponseConsultationDTO> update(@PathVariable("id") UUID id, @RequestBody PlayloadConsultationDTO dto) {
         ResponseConsultationDTO responseConsultationDTO = consultationCrudService.update(dto, id);
         return ResponseEntity.ok(responseConsultationDTO);
     }
 
-    @DeleteMapping("/finalizar/{id}")
+    @DeleteMapping("finalizar/{id}")
     public ResponseEntity<Void> finalizarConsulta(@PathVariable("id") UUID id) {
         consultationCrudService.finalizarConsulta(id);
         return ResponseEntity.noContent().build();

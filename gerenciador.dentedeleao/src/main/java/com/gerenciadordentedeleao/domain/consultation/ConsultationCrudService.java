@@ -16,6 +16,8 @@ import com.gerenciadordentedeleao.domain.material.dto.MaterialConsultationDTO;
 import java.util.List;
 import java.util.UUID;
 
+import org.hibernate.exception.ConstraintViolationException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -117,6 +119,23 @@ public class ConsultationCrudService {
                     .orElseThrow(() -> new ResourceNotFoundException("Material", "ID", entity.getMaterial().getId()));
 
             consultationMaterialsCrudService.getTotalFutureMaterialQuantity(material.getId(), material);
+        }
+    }
+
+    public void delete(UUID id) {
+        try {
+            consultationRepository.deleteById(id);
+        } catch (DataIntegrityViolationException e) {
+            if (!(e.getCause() instanceof ConstraintViolationException cve && "23503".equals(cve.getSQLState()))) {
+                throw new BusinessException("Erro ao excluir o registro: " + e.getMessage(), e);
+            }
+            var entity = consultationRepository.findById(id).orElseThrow(() -> new BusinessException("Consulta não econtrado com o ID: %s para realizar a exclusão".formatted(id)));
+            var markedAsDeleted = entity.setAsDeleted();
+            if (markedAsDeleted) {
+                consultationRepository.save(entity);
+            }
+        } catch (Exception e) {
+            throw new BusinessException("Erro ao excluir o registro: " + e.getMessage(), e);
         }
     }
 

@@ -1,5 +1,6 @@
 package com.gerenciadordentedeleao.domain.consultation.materials;
 
+import com.gerenciadordentedeleao.application.errorhandler.BusinessException;
 import com.gerenciadordentedeleao.application.errorhandler.ResourceNotFoundException;
 import com.gerenciadordentedeleao.domain.consultation.ConsultationEntity;
 import com.gerenciadordentedeleao.domain.consultation.dto.PlayloadConsultationDTO;
@@ -7,7 +8,9 @@ import com.gerenciadordentedeleao.domain.material.MaterialCrudService;
 import com.gerenciadordentedeleao.domain.material.MaterialEntity;
 import com.gerenciadordentedeleao.domain.material.MaterialRepository;
 import com.gerenciadordentedeleao.domain.material.dto.MaterialConsultationDTO;
+import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -73,6 +76,11 @@ public class ConsultationMaterialsCrudService {
             id.setMaterialId(material.getId());
 
             ConsultationMaterialsEntity consultationMaterialEntity = consultationMaterialRepository.findByConsultationId(consultation.getId(), id);
+
+            if (materialDTO.quantity() == 0) {
+                consultationMaterialRepository.deleteByConsultationAndMaterial(consultation.getId(), material.getId());
+            }
+
             consultationMaterialEntity.setId(id);
             consultationMaterialEntity.setMaterial(material);
             consultationMaterialEntity.setQuantity(materialDTO.quantity());
@@ -100,5 +108,22 @@ public class ConsultationMaterialsCrudService {
 
         return null;
     }
+
+//    private void delete(ConsultationMaterialsEntity consultationMaterialEntity) {
+//        try {
+//            consultationMaterialRepository.delete(consultationMaterialEntity);
+//        } catch (DataIntegrityViolationException e) {
+//            if (!(e.getCause() instanceof ConstraintViolationException cve && "23503".equals(cve.getSQLState()))) {
+//                throw new BusinessException("Erro ao excluir o registro: " + e.getMessage(), e);
+//            }
+//            var entity = consultationMaterialRepository.findById(id).orElseThrow(() -> new BusinessException("Consulta não econtrado com o ID: %s para realizar a exclusão".formatted(id)));
+//            var markedAsDeleted = entity.setAsDeleted();
+//            if (markedAsDeleted) {
+//                consultationMaterialRepository.save(entity);
+//            }
+//        } catch (Exception e) {
+//            throw new BusinessException("Erro ao excluir o registro: " + e.getMessage(), e);
+//        }
+//    }
 
 }
