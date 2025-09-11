@@ -1,18 +1,16 @@
 package com.gerenciadordentedeleao.domain.consultation.materials;
 
-import com.gerenciadordentedeleao.application.errorhandler.BusinessException;
 import com.gerenciadordentedeleao.application.errorhandler.ResourceNotFoundException;
 import com.gerenciadordentedeleao.domain.consultation.ConsultationEntity;
-import com.gerenciadordentedeleao.domain.consultation.dto.PlayloadConsultationDTO;
+import com.gerenciadordentedeleao.domain.consultation.dto.PayloadConsultationDTO;
 import com.gerenciadordentedeleao.domain.material.MaterialCrudService;
 import com.gerenciadordentedeleao.domain.material.MaterialEntity;
 import com.gerenciadordentedeleao.domain.material.MaterialRepository;
 import com.gerenciadordentedeleao.domain.material.dto.MaterialConsultationDTO;
-import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -42,8 +40,10 @@ public class ConsultationMaterialsCrudService {
         materialCrudService.setScheduleQuantity( materialId, schedule_quantity);
     }
 
-    public void createConsultationMaterials(PlayloadConsultationDTO dto, ConsultationEntity consultation) {
-        for (MaterialConsultationDTO materialDTO : dto.materials()) {
+    public List<ConsultationMaterialsEntity> createConsultationMaterials(PayloadConsultationDTO dto, ConsultationEntity consultation) {
+        List<ConsultationMaterialsEntity> materials = new ArrayList<>();
+
+         for (MaterialConsultationDTO materialDTO : dto.materials()) {
             MaterialEntity material = materialRepository.findById(materialDTO.materialId())
                     .orElseThrow(() -> new ResourceNotFoundException("Material", "ID", materialDTO.materialId()));
 
@@ -58,15 +58,18 @@ public class ConsultationMaterialsCrudService {
             consultationMaterialEntity.setQuantity(materialDTO.quantity());
 
             consultationMaterialRepository.save(consultationMaterialEntity);
+            materials.add(consultationMaterialEntity);
 
             getTotalFutureMaterialQuantity(materialDTO.materialId(), material);
 
             Date endDate = new Date(dto.endDate().getTime());
             materialRepository.save(materialCrudService.setExpectedEndDate(material, endDate));
         }
+
+         return materials;
     }
 
-    public void updateConsultationMaterials(PlayloadConsultationDTO dto, ConsultationEntity consultation) {
+    public void updateConsultationMaterials(PayloadConsultationDTO dto, ConsultationEntity consultation) {
         for (MaterialConsultationDTO materialDTO : dto.materials()){
             MaterialEntity material = materialRepository.findById(materialDTO.materialId())
                     .orElseThrow(() -> new ResourceNotFoundException("Material", "ID", materialDTO.materialId()));

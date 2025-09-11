@@ -2,7 +2,7 @@ package com.gerenciadordentedeleao.domain.consultation;
 
 import com.gerenciadordentedeleao.application.errorhandler.BusinessException;
 import com.gerenciadordentedeleao.application.errorhandler.ResourceNotFoundException;
-import com.gerenciadordentedeleao.domain.consultation.dto.PlayloadConsultationDTO;
+import com.gerenciadordentedeleao.domain.consultation.dto.PayloadConsultationDTO;
 import com.gerenciadordentedeleao.domain.consultation.dto.ResponseConsultationDTO;
 import com.gerenciadordentedeleao.domain.consultation.materials.ConsultationMaterialsCrudService;
 import com.gerenciadordentedeleao.domain.consultation.materials.ConsultationMaterialsEntity;
@@ -51,7 +51,7 @@ public class ConsultationCrudService {
         return consultations.stream().map(ConsultationCrudService::createResponseConsultationDTO).toList();
     }
 
-    public ResponseConsultationDTO create(PlayloadConsultationDTO dto) {
+    public ResponseConsultationDTO create(PayloadConsultationDTO dto) {
         ConsultationTypeEntity consultationType = consultationTypeRepository.findById(dto.consultationTypeId())
                 .orElseThrow(() -> new ResourceNotFoundException("Tipo de consulta", "ID", dto.consultationTypeId()));
 
@@ -61,16 +61,18 @@ public class ConsultationCrudService {
         consultation.setStartDate(dto.startDate());
         consultation.setEndDate(dto.endDate());
         consultation.setConsultationType(consultationType);
-
         consultation = consultationRepository.save(consultation);
 
-        consultationMaterialsCrudService.createConsultationMaterials(dto, consultation);
+        List<ConsultationMaterialsEntity> materials = consultationMaterialsCrudService.createConsultationMaterials(dto, consultation);
+
+        consultation.setMaterials(materials);
+        consultation = consultationRepository.save(consultation);
 
         return createResponseConsultationDTO(consultation);
     }
 
 
-    public ResponseConsultationDTO update(PlayloadConsultationDTO dto, UUID id) {
+    public ResponseConsultationDTO update(PayloadConsultationDTO dto, UUID id) {
         ConsultationEntity consultation = consultationRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Consulta", "ID", id));
 
@@ -93,6 +95,7 @@ public class ConsultationCrudService {
         List<MaterialConsultationDTO> materials = consultation.getMaterials().stream()
                 .map(m -> new MaterialConsultationDTO(m.getMaterial().getId(), m.getQuantity()))
                 .toList();
+
         return new ResponseConsultationDTO(
                 consultation.getPatientName(),
                 consultation.getStartDate(),

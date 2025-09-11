@@ -1,7 +1,7 @@
 package com.gerenciadordentedeleao.domain.controller;
 
 import com.gerenciadordentedeleao.domain.consultation.ConsultationCrudService;
-import com.gerenciadordentedeleao.domain.consultation.dto.PlayloadConsultationDTO;
+import com.gerenciadordentedeleao.domain.consultation.dto.PayloadConsultationDTO;
 import com.gerenciadordentedeleao.domain.consultation.dto.ResponseConsultationDTO;
 
 import java.util.List;
@@ -43,13 +43,13 @@ public class ConsultationController {
     }
 
     @PostMapping()
-    public ResponseEntity<ResponseConsultationDTO> create(@RequestBody PlayloadConsultationDTO dto) {
+    public ResponseEntity<ResponseConsultationDTO> create(@RequestBody PayloadConsultationDTO dto) {
         ResponseConsultationDTO responseConsultationDTO = consultationCrudService.create(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(responseConsultationDTO);
     }
 
     @PutMapping("{id}")
-    public ResponseEntity<ResponseConsultationDTO> update(@PathVariable("id") UUID id, @RequestBody PlayloadConsultationDTO dto) {
+    public ResponseEntity<ResponseConsultationDTO> update(@PathVariable("id") UUID id, @RequestBody PayloadConsultationDTO dto) {
         ResponseConsultationDTO responseConsultationDTO = consultationCrudService.update(dto, id);
         return ResponseEntity.ok(responseConsultationDTO);
     }
