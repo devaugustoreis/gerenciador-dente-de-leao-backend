@@ -3,21 +3,16 @@ package com.gerenciadordentedeleao.domain.controller;
 import com.gerenciadordentedeleao.domain.consultation.ConsultationCrudService;
 import com.gerenciadordentedeleao.domain.consultation.dto.PayloadConsultationDTO;
 import com.gerenciadordentedeleao.domain.consultation.dto.ResponseConsultationDTO;
-
-import java.util.List;
-import java.util.UUID;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDate;
+import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping(value = "/entities/consultation")
@@ -37,8 +32,10 @@ public class ConsultationController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ResponseConsultationDTO>> findAllDTO() {
-        var responseConsultationDTOList = consultationCrudService.findAll();
+    public ResponseEntity<List<ResponseConsultationDTO>> findAllDTO(@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+                                                                    @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
+                                                                    Pageable pageable) {
+        var responseConsultationDTOList = consultationCrudService.findAll(startDate, endDate, pageable);
         return ResponseEntity.ok(responseConsultationDTOList);
     }
 

@@ -12,13 +12,15 @@ import com.gerenciadordentedeleao.domain.consultation.type.ConsultationTypeRepos
 import com.gerenciadordentedeleao.domain.material.MaterialEntity;
 import com.gerenciadordentedeleao.domain.material.MaterialRepository;
 import com.gerenciadordentedeleao.domain.material.dto.MaterialConsultationDTO;
-
-import java.util.List;
-import java.util.UUID;
-
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.UUID;
 
 @Service
 public class ConsultationCrudService {
@@ -46,8 +48,11 @@ public class ConsultationCrudService {
         return createResponseConsultationDTO(consultation);
     }
 
-    public List<ResponseConsultationDTO> findAll() {
-        var consultations = consultationRepository.findAll();
+    public List<ResponseConsultationDTO> findAll(LocalDate startDate, LocalDate endDate, Pageable pageable) {
+        LocalDateTime startOfDay = startDate.atStartOfDay();
+        LocalDateTime endOfDay = endDate.atTime(23, 59, 59);
+
+        var consultations = consultationRepository.findByStartDateBetween(startOfDay, endOfDay, pageable);
         return consultations.stream().map(ConsultationCrudService::createResponseConsultationDTO).toList();
     }
 

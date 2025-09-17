@@ -2,14 +2,14 @@ package com.gerenciadordentedeleao.domain.consultation.dto;
 
 import com.gerenciadordentedeleao.domain.material.dto.MaterialConsultationDTO;
 
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
 public record ResponseConsultationDTO(
         String patientName,
-        Timestamp startDate,
-        Timestamp  endDate,
+        LocalDateTime startDate,
+        LocalDateTime  endDate,
         List<MaterialConsultationDTO> materials,
         UUID consultationTypeId,
         UUID consultationId,
