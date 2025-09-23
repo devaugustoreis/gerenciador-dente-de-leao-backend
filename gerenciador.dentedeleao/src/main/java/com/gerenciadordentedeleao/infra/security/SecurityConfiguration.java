@@ -36,6 +36,7 @@ public class SecurityConfiguration {
                         .requestMatchers("/").permitAll()
                         .requestMatchers(HttpMethod.POST, "user/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "user/create").permitAll()
+                        .requestMatchers("/api/password/**").permitAll()
                         .anyRequest().authenticated())
                 .headers(h -> h.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
