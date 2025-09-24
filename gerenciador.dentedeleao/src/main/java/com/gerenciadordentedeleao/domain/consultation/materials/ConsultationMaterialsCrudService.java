@@ -2,6 +2,7 @@ package com.gerenciadordentedeleao.domain.consultation.materials;
 
 import com.gerenciadordentedeleao.application.errorhandler.ResourceNotFoundException;
 import com.gerenciadordentedeleao.domain.consultation.ConsultationEntity;
+import com.gerenciadordentedeleao.domain.consultation.ConsultationRepository;
 import com.gerenciadordentedeleao.domain.consultation.dto.PayloadConsultationDTO;
 import com.gerenciadordentedeleao.domain.material.MaterialCrudService;
 import com.gerenciadordentedeleao.domain.material.MaterialEntity;
@@ -25,10 +26,13 @@ public class ConsultationMaterialsCrudService {
 
     private final MaterialRepository materialRepository;
 
-     public ConsultationMaterialsCrudService(@Lazy MaterialCrudService materialCrudService, ConsultationMaterialsRepository consultationMaterialRepository, MaterialRepository materialRepository) {
+    private final ConsultationRepository consultationRepository;
+
+     public ConsultationMaterialsCrudService(@Lazy MaterialCrudService materialCrudService, ConsultationMaterialsRepository consultationMaterialRepository, MaterialRepository materialRepository, ConsultationRepository consultationRepository) {
         this.materialCrudService = materialCrudService;
         this.consultationMaterialRepository = consultationMaterialRepository;
         this.materialRepository = materialRepository;
+        this.consultationRepository = consultationRepository;
     }
 
     public void getTotalFutureMaterialQuantity(UUID materialId, MaterialEntity material) {
@@ -64,15 +68,21 @@ public class ConsultationMaterialsCrudService {
             getTotalFutureMaterialQuantity(materialDTO.materialId(), material);
 
             Date endDate = Date.from(dto.endDate().atZone(ZoneId.systemDefault()).toInstant());
-
-             materialRepository.save(materialCrudService.setExpectedEndDate(material, endDate));
+            materialRepository.save(materialCrudService.setExpectedEndDate(material, endDate));
         }
 
          return materials;
     }
 
-    public void updateConsultationMaterials(PayloadConsultationDTO dto, ConsultationEntity consultation) {
-        for (MaterialConsultationDTO materialDTO : dto.materials()){
+    public List<ConsultationMaterialsEntity> updateConsultationMaterials(PayloadConsultationDTO dto, ConsultationEntity consultation) {
+        List<ConsultationMaterialsEntity> materials = new ArrayList<>();
+
+         for (MaterialConsultationDTO materialDTO : dto.materials()){
+
+             if (materialDTO.quantity().equals(0)) {
+                 continue;
+             }
+
             MaterialEntity material = materialRepository.findById(materialDTO.materialId())
                     .orElseThrow(() -> new ResourceNotFoundException("Material", "ID", materialDTO.materialId()));
 
@@ -80,23 +90,22 @@ public class ConsultationMaterialsCrudService {
             id.setConsultationId(consultation.getId());
             id.setMaterialId(material.getId());
 
-            ConsultationMaterialsEntity consultationMaterialEntity = consultationMaterialRepository.findByConsultationId(consultation.getId(), id);
-
-            if (materialDTO.quantity() == 0) {
-                consultationMaterialRepository.deleteByConsultationAndMaterial(consultation.getId(), material.getId());
-            }
-
+            ConsultationMaterialsEntity consultationMaterialEntity = new ConsultationMaterialsEntity();
             consultationMaterialEntity.setId(id);
+            consultationMaterialEntity.setConsultation(consultation);
             consultationMaterialEntity.setMaterial(material);
             consultationMaterialEntity.setQuantity(materialDTO.quantity());
 
             consultationMaterialRepository.save(consultationMaterialEntity);
+            materials.add(consultationMaterialEntity);
 
             getTotalFutureMaterialQuantity(materialDTO.materialId(), material);
 
             Date endDate = Date.from(dto.endDate().atZone(ZoneId.systemDefault()).toInstant());
             materialRepository.save(materialCrudService.setExpectedEndDate(material, endDate));
         }
+
+        return materials;
     }
 
     public Date findExpectedEndDate(MaterialEntity material){

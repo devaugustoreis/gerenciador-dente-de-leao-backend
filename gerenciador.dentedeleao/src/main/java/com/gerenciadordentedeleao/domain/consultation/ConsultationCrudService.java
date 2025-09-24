@@ -81,17 +81,20 @@ public class ConsultationCrudService {
         ConsultationEntity consultation = consultationRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Consulta", "ID", id));
 
+        ConsultationTypeEntity consultationType = consultationTypeRepository.findById(dto.consultationTypeId())
+                .orElseThrow(() -> new ResourceNotFoundException("Tipo de consulta", "ID", dto.consultationTypeId()));
+
         consultation.setPatientName(dto.patientName());
         consultation.setStartDate(dto.startDate());
         consultation.setEndDate(dto.endDate());
-
-        ConsultationTypeEntity consultationType = consultationTypeRepository.findById(dto.consultationTypeId())
-                .orElseThrow(() -> new ResourceNotFoundException("Tipo de consulta", "ID", dto.consultationTypeId()));
         consultation.setConsultationType(consultationType);
-
         consultation = consultationRepository.save(consultation);
 
-        consultationMaterialsCrudService.updateConsultationMaterials(dto, consultation);
+        List<ConsultationMaterialsEntity> materials = consultationMaterialsCrudService.updateConsultationMaterials(dto, consultation);
+
+        consultation.getMaterials().clear();
+        consultation.getMaterials().addAll(materials);
+        consultation = consultationRepository.save(consultation);
 
         return createResponseConsultationDTO(consultation);
     }

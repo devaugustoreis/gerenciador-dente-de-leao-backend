@@ -39,7 +39,7 @@ public class ConsultationEntity implements PersistableEntity {
     @JoinColumn(name = "consultation_type_id", referencedColumnName = "id")
     private ConsultationTypeEntity consultationType;
 
-    @OneToMany(mappedBy = "consultation",fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "consultation", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ConsultationMaterialsEntity> materials;
 
     @Override
