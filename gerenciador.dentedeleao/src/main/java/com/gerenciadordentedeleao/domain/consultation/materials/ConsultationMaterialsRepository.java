@@ -38,6 +38,7 @@ public interface ConsultationMaterialsRepository extends JpaRepository<Consultat
             SELECT consultationMaterial.quantity, FUNCTION('DATE', consultationMaterial.consultation.endDate)
             FROM ConsultationMaterialEntity consultationMaterial
             WHERE consultationMaterial.material = :material
+            AND consultationMaterial.consultation.concluded = false
             ORDER BY consultationMaterial.consultation.startDate
             """
     )
