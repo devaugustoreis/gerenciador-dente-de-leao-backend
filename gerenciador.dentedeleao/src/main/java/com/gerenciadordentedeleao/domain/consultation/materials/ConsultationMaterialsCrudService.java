@@ -67,8 +67,7 @@ public class ConsultationMaterialsCrudService {
 
             getTotalFutureMaterialQuantity(materialDTO.materialId(), material);
 
-            Date endDate = Date.from(dto.endDate().atZone(ZoneId.systemDefault()).toInstant());
-            materialRepository.save(materialCrudService.setExpectedEndDate(material, endDate));
+            materialRepository.save(materialCrudService.setExpectedEndDate(material));
         }
 
          return materials;
@@ -101,8 +100,7 @@ public class ConsultationMaterialsCrudService {
 
             getTotalFutureMaterialQuantity(materialDTO.materialId(), material);
 
-            Date endDate = Date.from(dto.endDate().atZone(ZoneId.systemDefault()).toInstant());
-            materialRepository.save(materialCrudService.setExpectedEndDate(material, endDate));
+            materialRepository.save(materialCrudService.setExpectedEndDate(material));
         }
 
         return materials;
@@ -122,22 +120,4 @@ public class ConsultationMaterialsCrudService {
 
         return null;
     }
-
-//    private void delete(ConsultationMaterialsEntity consultationMaterialEntity) {
-//        try {
-//            consultationMaterialRepository.delete(consultationMaterialEntity);
-//        } catch (DataIntegrityViolationException e) {
-//            if (!(e.getCause() instanceof ConstraintViolationException cve && "23503".equals(cve.getSQLState()))) {
-//                throw new BusinessException("Erro ao excluir o registro: " + e.getMessage(), e);
-//            }
-//            var entity = consultationMaterialRepository.findById(id).orElseThrow(() -> new BusinessException("Consulta não econtrado com o ID: %s para realizar a exclusão".formatted(id)));
-//            var markedAsDeleted = entity.setAsDeleted();
-//            if (markedAsDeleted) {
-//                consultationMaterialRepository.save(entity);
-//            }
-//        } catch (Exception e) {
-//            throw new BusinessException("Erro ao excluir o registro: " + e.getMessage(), e);
-//        }
-//    }
-
 }

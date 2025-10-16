@@ -51,7 +51,7 @@ public class ConsultationController {
         return ResponseEntity.ok(responseConsultationDTO);
     }
 
-    @DeleteMapping("finalizar/{id}")
+    @PostMapping("finalizar/{id}")
     public ResponseEntity<Void> finalizarConsulta(@PathVariable("id") UUID id) {
         consultationCrudService.finalizarConsulta(id);
         return ResponseEntity.noContent().build();

@@ -9,9 +9,12 @@ import com.gerenciadordentedeleao.domain.consultation.materials.ConsultationMate
 import com.gerenciadordentedeleao.domain.consultation.materials.ConsultationMaterialsRepository;
 import com.gerenciadordentedeleao.domain.consultation.type.ConsultationTypeEntity;
 import com.gerenciadordentedeleao.domain.consultation.type.ConsultationTypeRepository;
+import com.gerenciadordentedeleao.domain.material.MaterialCrudService;
 import com.gerenciadordentedeleao.domain.material.MaterialEntity;
 import com.gerenciadordentedeleao.domain.material.MaterialRepository;
 import com.gerenciadordentedeleao.domain.material.dto.MaterialConsultationDTO;
+import com.gerenciadordentedeleao.domain.material.dto.MovementStockDTO;
+import com.gerenciadordentedeleao.domain.material.historic.MovementType;
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Pageable;
@@ -35,12 +38,15 @@ public class ConsultationCrudService {
 
     private final ConsultationRepository consultationRepository;
 
-    public ConsultationCrudService(ConsultationRepository consultationRepository, ConsultationMaterialsCrudService consultationMaterialsCrudService, ConsultationMaterialsRepository consultationMaterialRepository, ConsultationTypeRepository consultationTypeRepository, MaterialRepository materialRepository) {
+    private final MaterialCrudService materialCrudService;
+
+    public ConsultationCrudService(ConsultationRepository consultationRepository, ConsultationMaterialsCrudService consultationMaterialsCrudService, ConsultationMaterialsRepository consultationMaterialRepository, ConsultationTypeRepository consultationTypeRepository, MaterialRepository materialRepository, MaterialCrudService materialCrudService) {
         this.consultationMaterialsCrudService = consultationMaterialsCrudService;
         this.consultationMaterialRepository = consultationMaterialRepository;
         this.consultationTypeRepository = consultationTypeRepository;
         this.materialRepository = materialRepository;
         this.consultationRepository = consultationRepository;
+        this.materialCrudService = materialCrudService;
     }
 
     public ResponseConsultationDTO findById(UUID id) {
@@ -130,6 +136,9 @@ public class ConsultationCrudService {
                     .orElseThrow(() -> new ResourceNotFoundException("Material", "ID", entity.getMaterial().getId()));
 
             consultationMaterialsCrudService.getTotalFutureMaterialQuantity(material.getId(), material);
+
+            MovementStockDTO movementStockDTO = new MovementStockDTO(MovementType.REMOVAL, entity.getQuantity());
+            materialCrudService.movementStock(material.getId(), movementStockDTO);
         }
     }
 

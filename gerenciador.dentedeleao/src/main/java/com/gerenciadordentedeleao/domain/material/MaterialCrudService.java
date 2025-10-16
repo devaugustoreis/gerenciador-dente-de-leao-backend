@@ -89,13 +89,11 @@ public class MaterialCrudService {
         repository.save(material);
     }
 
-    public MaterialEntity setExpectedEndDate(MaterialEntity material, Date expectedEndDate) {
+    public MaterialEntity setExpectedEndDate(MaterialEntity material) {
+        Date expectedEndDate = null;
+
         if (material.getScheduledQuantity() >= material.getStockQuantity() && material.getExpectedEndDate() == null) {
-
-            if (expectedEndDate == null){
-                expectedEndDate = consultationMaterialsCrudService.findExpectedEndDate(material);
-            }
-
+            expectedEndDate = consultationMaterialsCrudService.findExpectedEndDate(material);
             material.setExpectedEndDate(expectedEndDate);
         }else if (material.getScheduledQuantity() < material.getStockQuantity() && material.getExpectedEndDate() != null){
             material.setExpectedEndDate(null);
@@ -115,7 +113,7 @@ public class MaterialCrudService {
         movementActions.get(dto.movementType()).accept(material, dto);
 
         createMovementHistoric(dto, material);
-        material = setExpectedEndDate(material, null);
+        material = setExpectedEndDate(material);
         return repository.save(material);
     }
 
