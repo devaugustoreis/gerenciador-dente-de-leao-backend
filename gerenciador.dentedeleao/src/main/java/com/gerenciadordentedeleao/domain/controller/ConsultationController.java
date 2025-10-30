@@ -1,9 +1,11 @@
 package com.gerenciadordentedeleao.domain.controller;
 
 import com.gerenciadordentedeleao.domain.consultation.ConsultationCrudService;
+import com.gerenciadordentedeleao.domain.consultation.ConsultationEntity;
 import com.gerenciadordentedeleao.domain.consultation.dto.PayloadConsultationDTO;
 import com.gerenciadordentedeleao.domain.consultation.dto.ResponseConsultationDTO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -37,6 +39,11 @@ public class ConsultationController {
                                                                     Pageable pageable) {
         var responseConsultationDTOList = consultationCrudService.findAll(startDate, endDate, pageable);
         return ResponseEntity.ok(responseConsultationDTOList);
+    }
+
+    @GetMapping("/concluded-false")
+    public ResponseEntity<Page<ConsultationEntity>> findByConcludedFalse(Pageable pageable) {
+        return ResponseEntity.ok(consultationCrudService.findByConcludedFalse(pageable));
     }
 
     @PostMapping()

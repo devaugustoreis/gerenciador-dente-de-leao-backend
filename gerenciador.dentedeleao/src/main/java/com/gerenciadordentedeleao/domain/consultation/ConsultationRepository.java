@@ -13,4 +13,5 @@ public interface ConsultationRepository extends JpaRepository<ConsultationEntity
 
     Page<ConsultationEntity> findByStartDateBetween(LocalDateTime startDate, LocalDateTime endDate, Pageable pageable);
 
+    Page<ConsultationEntity> findByEndDateBeforeAndConcludedFalse(LocalDateTime now, Pageable pageable);
 }

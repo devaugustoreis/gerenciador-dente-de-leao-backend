@@ -1,6 +1,8 @@
 package com.gerenciadordentedeleao.application.abstractions;
 
 import com.gerenciadordentedeleao.application.errorhandler.ResourceNotFoundException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,8 +30,8 @@ public abstract class AbstractController<T extends PersistableEntity> {
     }
 
     @GetMapping
-    public ResponseEntity<List<T>> findAll() {
-        var entities = crudService.findAll();
+    public ResponseEntity<Page<T>> findAll(Pageable pageable) {
+        var entities = crudService.findAll(pageable);
         return ResponseEntity.ok(entities);
     }
 

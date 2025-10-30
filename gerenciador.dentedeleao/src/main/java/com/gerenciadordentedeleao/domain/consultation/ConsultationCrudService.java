@@ -17,6 +17,7 @@ import com.gerenciadordentedeleao.domain.material.dto.MovementStockDTO;
 import com.gerenciadordentedeleao.domain.material.historic.MovementType;
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -60,6 +61,10 @@ public class ConsultationCrudService {
 
         var consultations = consultationRepository.findByStartDateBetween(startOfDay, endOfDay, pageable);
         return consultations.stream().map(ConsultationCrudService::createResponseConsultationDTO).toList();
+    }
+
+    public Page<ConsultationEntity> findByConcludedFalse(Pageable pageable) {
+        return consultationRepository.findByEndDateBeforeAndConcludedFalse(LocalDateTime.now(), pageable);
     }
 
     public ResponseConsultationDTO create(PayloadConsultationDTO dto) {

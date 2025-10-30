@@ -21,14 +21,6 @@ public interface ConsultationMaterialsRepository extends JpaRepository<Consultat
     @Query("""
             SELECT consultationMaterial
             FROM ConsultationMaterialEntity consultationMaterial
-            WHERE consultationMaterial.id = :id
-            AND consultationMaterial.consultation.id = :consultationId
-            """)
-    ConsultationMaterialsEntity findByConsultationId(@Param("consultationId") UUID consultationId, @Param("id") ConsultationMaterialsId id);
-
-    @Query("""
-            SELECT consultationMaterial
-            FROM ConsultationMaterialEntity consultationMaterial
             WHERE consultationMaterial.consultation.id = :id
             """)
     List<ConsultationMaterialsEntity> findByIdReturnId(@Param("id") UUID id);
@@ -44,10 +36,4 @@ public interface ConsultationMaterialsRepository extends JpaRepository<Consultat
     )
     List<Object[]> getMaterialsQuantities(@Param("material") MaterialEntity material);
 
-    @Modifying
-    @Transactional
-    @Query("DELETE FROM ConsultationMaterialEntity consultationMaterial " +
-            "WHERE consultationMaterial.consultation.id = :consultationId " +
-            "AND consultationMaterial.material.id = :materialId")
-    void deleteByConsultationAndMaterial(@Param("consultationId") UUID consultationId, @Param("materialId") UUID materialId);
 }

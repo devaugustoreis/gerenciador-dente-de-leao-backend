@@ -7,6 +7,8 @@ import com.gerenciadordentedeleao.domain.material.dto.CreateMaterialDTO;
 import com.gerenciadordentedeleao.domain.material.dto.MovementStockDTO;
 import com.gerenciadordentedeleao.domain.material.dto.UpdateMaterialDTO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -36,8 +38,8 @@ public class MaterialController {
     }
 
     @GetMapping
-    public ResponseEntity<List<MaterialEntity>> findAllMaterials() {
-        return ResponseEntity.ok(materialCrudService.findAll());
+    public ResponseEntity<Page<MaterialEntity>> findAllMaterials(Pageable pageable) {
+        return ResponseEntity.ok(materialCrudService.findAll(pageable));
     }
 
     @PostMapping

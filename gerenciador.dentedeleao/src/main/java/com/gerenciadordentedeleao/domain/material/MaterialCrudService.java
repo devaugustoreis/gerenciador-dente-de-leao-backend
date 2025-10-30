@@ -14,6 +14,8 @@ import com.gerenciadordentedeleao.application.errorhandler.ResourceNotFoundExcep
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -52,8 +54,8 @@ public class MaterialCrudService {
         return repository.findById(id);
     }
 
-    public List<MaterialEntity> findAll() {
-        return repository.findAll();
+    public Page<MaterialEntity> findAll(Pageable pageable) {
+        return repository.findAll(pageable);
     }
 
     public MaterialEntity create(CreateMaterialDTO dto) {
