@@ -32,8 +32,9 @@ public class ConsultationEntity implements PersistableEntity {
     @Column(name = "end_date")
     private LocalDateTime endDate;
 
-    @Column(name = "concluded")
-    private Boolean concluded = false;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status")
+    private ConsultationStatus status;
 
     @ManyToOne
     @JoinColumn(name = "consultation_type_id", referencedColumnName = "id")

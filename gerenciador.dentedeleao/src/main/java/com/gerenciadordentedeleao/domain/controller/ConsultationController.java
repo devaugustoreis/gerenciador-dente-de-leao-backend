@@ -43,7 +43,7 @@ public class ConsultationController {
 
     @GetMapping("/concluded-false")
     public ResponseEntity<Page<ConsultationEntity>> findByConcludedFalse(Pageable pageable) {
-        return ResponseEntity.ok(consultationCrudService.findByConcludedFalse(pageable));
+        return ResponseEntity.ok(consultationCrudService.findByStatusScheduled(pageable));
     }
 
     @PostMapping()

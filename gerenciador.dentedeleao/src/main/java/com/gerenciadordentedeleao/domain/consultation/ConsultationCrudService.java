@@ -63,8 +63,8 @@ public class ConsultationCrudService {
         return consultations.stream().map(ConsultationCrudService::createResponseConsultationDTO).toList();
     }
 
-    public Page<ConsultationEntity> findByConcludedFalse(Pageable pageable) {
-        return consultationRepository.findByEndDateBeforeAndConcludedFalse(LocalDateTime.now(), pageable);
+    public Page<ConsultationEntity> findByStatusScheduled(Pageable pageable) {
+        return consultationRepository.findByEndDateBeforeAndStatus(LocalDateTime.now(), ConsultationStatus.SCHEDULED, pageable);
     }
 
     public ResponseConsultationDTO create(PayloadConsultationDTO dto) {
@@ -86,7 +86,6 @@ public class ConsultationCrudService {
 
         return createResponseConsultationDTO(consultation);
     }
-
 
     public ResponseConsultationDTO update(PayloadConsultationDTO dto, UUID id) {
         ConsultationEntity consultation = consultationRepository.findById(id)
@@ -122,7 +121,7 @@ public class ConsultationCrudService {
                 materials,
                 consultation.getConsultationType().getId(),
                 consultation.getId(),
-                consultation.getConcluded()
+                consultation.getStatus()
         );
     }
 
@@ -130,7 +129,7 @@ public class ConsultationCrudService {
 
         ConsultationEntity consultation = consultationRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Consulta", "ID", id));
-        consultation.setConcluded(true);
+        consultation.setStatus(ConsultationStatus.CONCLUDED);
 
         consultationRepository.save(consultation);
 
