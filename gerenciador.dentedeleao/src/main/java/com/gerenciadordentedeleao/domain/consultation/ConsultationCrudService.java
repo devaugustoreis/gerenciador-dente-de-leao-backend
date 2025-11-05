@@ -121,7 +121,8 @@ public class ConsultationCrudService {
                 materials,
                 consultation.getConsultationType().getId(),
                 consultation.getId(),
-                consultation.getStatus()
+                consultation.getStatus(),
+                consultation.getStatus() == ConsultationStatus.CONCLUDED
         );
     }
 

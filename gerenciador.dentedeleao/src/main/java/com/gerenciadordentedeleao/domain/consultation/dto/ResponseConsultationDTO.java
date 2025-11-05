@@ -14,6 +14,7 @@ public record ResponseConsultationDTO(
         List<MaterialConsultationDTO> materials,
         UUID consultationTypeId,
         UUID consultationId,
-        ConsultationStatus status
+        ConsultationStatus status,
+        Boolean concluded
 ){
 }
