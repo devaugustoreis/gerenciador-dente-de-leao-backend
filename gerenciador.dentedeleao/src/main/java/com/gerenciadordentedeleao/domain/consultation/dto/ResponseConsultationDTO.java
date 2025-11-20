@@ -13,7 +13,7 @@ public record ResponseConsultationDTO(
         LocalDateTime  endDate,
         List<MaterialConsultationDTO> materials,
         UUID consultationTypeId,
-        UUID consultationId,
+        UUID id,
         ConsultationStatus status,
         Boolean concluded
 ){

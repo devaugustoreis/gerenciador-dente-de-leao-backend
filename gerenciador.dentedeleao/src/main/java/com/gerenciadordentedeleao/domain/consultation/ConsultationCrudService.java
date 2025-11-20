@@ -99,6 +99,7 @@ public class ConsultationCrudService {
         consultation.setEndDate(dto.endDate());
         consultation.setConsultationType(consultationType);
         consultation = consultationRepository.save(consultation);
+        consultation.setStatus(dto.consultationStatus());
 
         List<ConsultationMaterialsEntity> materials = consultationMaterialsCrudService.updateConsultationMaterials(dto, consultation);
 
