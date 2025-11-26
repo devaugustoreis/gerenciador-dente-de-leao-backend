@@ -77,6 +77,7 @@ public class ConsultationCrudService {
         consultation.setStartDate(dto.startDate());
         consultation.setEndDate(dto.endDate());
         consultation.setConsultationType(consultationType);
+        consultation.setStatus(ConsultationStatus.SCHEDULED);
         consultation = consultationRepository.save(consultation);
 
         List<ConsultationMaterialsEntity> materials = consultationMaterialsCrudService.createConsultationMaterials(dto, consultation);
@@ -99,7 +100,7 @@ public class ConsultationCrudService {
         consultation.setEndDate(dto.endDate());
         consultation.setConsultationType(consultationType);
         consultation = consultationRepository.save(consultation);
-        consultation.setStatus(dto.consultationStatus());
+        consultation.setStatus(dto.status());
 
         List<ConsultationMaterialsEntity> materials = consultationMaterialsCrudService.updateConsultationMaterials(dto, consultation);
 
