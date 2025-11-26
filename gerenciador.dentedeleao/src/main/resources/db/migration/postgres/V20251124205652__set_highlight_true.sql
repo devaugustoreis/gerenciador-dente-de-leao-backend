@@ -1,0 +1,1 @@
+UPDATE materials SET highlight = TRUE WHERE scheduled_quantity >= stock_quantity;

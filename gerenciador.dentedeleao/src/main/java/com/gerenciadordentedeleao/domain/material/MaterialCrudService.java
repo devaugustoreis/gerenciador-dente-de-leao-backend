@@ -20,7 +20,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.*;
 import java.util.function.BiConsumer;
 
@@ -68,6 +70,7 @@ public class MaterialCrudService {
         material.setStockQuantity(0);
         material.setScheduledQuantity(0);
         material.setAlertQuantity(0);
+        material.setHighlight(false);
         return repository.save(material);
     }
 
@@ -92,13 +95,24 @@ public class MaterialCrudService {
     }
 
     public MaterialEntity setExpectedEndDate(MaterialEntity material) {
-        Date expectedEndDate = null;
+        Date duasSemanasDepois = Date.from(
+                LocalDate.now().plusWeeks(2)
+                        .atStartOfDay(ZoneId.systemDefault())
+                        .toInstant()
+        );
 
-        if (material.getScheduledQuantity() >= material.getStockQuantity() && material.getExpectedEndDate() == null) {
-            expectedEndDate = consultationMaterialsCrudService.findExpectedEndDate(material);
-            material.setExpectedEndDate(expectedEndDate);
-        }else if (material.getScheduledQuantity() < material.getStockQuantity() && material.getExpectedEndDate() != null){
+        boolean quantidadeAgendadaMaiorQueEstoque = material.getScheduledQuantity() >= material.getStockQuantity();
+        boolean possuiDataTermino = material.getExpectedEndDate() != null;
+
+        if (quantidadeAgendadaMaiorQueEstoque && !possuiDataTermino) {
+            Date expectedEnd = consultationMaterialsCrudService.findExpectedEndDate(material);
+            material.setExpectedEndDate(expectedEnd);
+        } else if (!quantidadeAgendadaMaiorQueEstoque && possuiDataTermino) {
             material.setExpectedEndDate(null);
+        }
+
+        if (possuiDataTermino && material.getExpectedEndDate().before(duasSemanasDepois)) {
+            material.setHighlight(Boolean.TRUE);
         }
 
         return material;

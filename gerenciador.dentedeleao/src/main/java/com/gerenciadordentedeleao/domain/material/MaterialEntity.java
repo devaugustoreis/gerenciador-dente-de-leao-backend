@@ -47,6 +47,9 @@ public class MaterialEntity implements Persistable<UUID> {
     @Column(name = "alert_quantity")
     private Integer alertQuantity;
 
+    @Column(name = "highlight")
+    private Boolean highlight;
+
     @ManyToOne
     @JoinColumn(name = "category_id", referencedColumnName = "id")
     private CategoryEntity category;

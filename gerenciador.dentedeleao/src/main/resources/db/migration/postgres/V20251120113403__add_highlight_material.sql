@@ -1,0 +1,1 @@
+ALTER TABLE dente_de_leao_manager.materials ADD COLUMN highlight BOOLEAN NOT NULL DEFAULT FALSE;
