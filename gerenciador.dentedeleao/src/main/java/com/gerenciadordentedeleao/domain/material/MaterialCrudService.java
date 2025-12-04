@@ -70,6 +70,7 @@ public class MaterialCrudService {
         material.setStockQuantity(0);
         material.setScheduledQuantity(0);
         material.setAlertQuantity(0);
+        material.setHighlight(false);
         return repository.save(material);
     }
 
