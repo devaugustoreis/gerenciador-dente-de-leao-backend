@@ -13,5 +13,5 @@ public record PayloadConsultationDTO(
         LocalDateTime  endDate,
         List<MaterialConsultationDTO> materials,
         UUID consultationTypeId,
-        ConsultationStatus consultationStatus) {
+        ConsultationStatus status) {
 }

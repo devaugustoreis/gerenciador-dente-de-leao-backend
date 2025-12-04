@@ -11,7 +11,6 @@ import com.gerenciadordentedeleao.domain.material.dto.MaterialConsultationDTO;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -67,7 +66,7 @@ public class ConsultationMaterialsCrudService {
 
             getTotalFutureMaterialQuantity(materialDTO.materialId(), material);
 
-            materialRepository.save(materialCrudService.setExpectedEndDate(material));
+            materialRepository.save(materialCrudService.setExpectedEndDateAndHighlight(material));
         }
 
          return materials;
@@ -100,7 +99,7 @@ public class ConsultationMaterialsCrudService {
 
             getTotalFutureMaterialQuantity(materialDTO.materialId(), material);
 
-            materialRepository.save(materialCrudService.setExpectedEndDate(material));
+            materialRepository.save(materialCrudService.setExpectedEndDateAndHighlight(material));
         }
 
         return materials;

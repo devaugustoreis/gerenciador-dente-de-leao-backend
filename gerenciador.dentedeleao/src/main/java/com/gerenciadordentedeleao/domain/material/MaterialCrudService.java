@@ -90,10 +90,11 @@ public class MaterialCrudService {
         MaterialEntity material = repository.findById(materialId)
                 .orElseThrow(() -> new ResourceNotFoundException("Material", "ID", materialId));
         material.setScheduledQuantity(quantity);
+
         repository.save(material);
     }
 
-    public MaterialEntity setExpectedEndDate(MaterialEntity material) {
+    public MaterialEntity setExpectedEndDateAndHighlight(MaterialEntity material) {
         Date duasSemanasDepois = Date.from(
                 LocalDate.now().plusWeeks(2)
                         .atStartOfDay(ZoneId.systemDefault())
@@ -110,8 +111,10 @@ public class MaterialCrudService {
             material.setExpectedEndDate(null);
         }
 
-        if (possuiDataTermino && material.getExpectedEndDate().before(duasSemanasDepois)) {
+        if (material.getExpectedEndDate() != null && material.getExpectedEndDate().before(duasSemanasDepois)) {
             material.setHighlight(Boolean.TRUE);
+        }else{
+            material.setHighlight(Boolean.FALSE);
         }
 
         return material;
@@ -128,7 +131,7 @@ public class MaterialCrudService {
         movementActions.get(dto.movementType()).accept(material, dto);
 
         createMovementHistoric(dto, material);
-        material = setExpectedEndDate(material);
+        material = setExpectedEndDateAndHighlight(material);
         return repository.save(material);
     }
 
