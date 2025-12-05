@@ -16,13 +16,14 @@ services:
       interval: 5s
       timeout: 5s
       retries: 10
+    networks:
+      - dente_de_leao_network
 
   app:
-    image: arthurluciani/gerenciador-dente-de-leao:b0.0.1
+    image: gerenciador-dente-de-leao-local:latest
     depends_on:
       - db
     environment:
-      # Spring Boot will pick these env vars (relaxed binding) and override application.properties
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/gerenciador_dente_de_leao
       SPRING_DATASOURCE_USERNAME: gerenciador_owner
       SPRING_DATASOURCE_PASSWORD: changeme
@@ -31,15 +32,22 @@ services:
     ports:
       - "8080:8080"
     restart: on-failure
+    networks:
+      - dente_de_leao_network
 
   frontend:
     image: arthurluciani/gerenciador-dente-de-leao:latest-frontend
     depends_on:
       - app
     ports:
-      - "8081:80" # host:container (serves the built SPA on host port 3000)
+      - "8081:80"
     restart: unless-stopped
-    # no extra environment required because nginx proxies /api to the `app` service inside compose
+    networks:
+      - dente_de_leao_network
 
 volumes:
   db-data:
+
+networks:
+  dente_de_leao_network:
+    driver: bridge
