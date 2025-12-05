@@ -48,8 +48,8 @@ public class ConsultationMaterialsCrudService {
         List<ConsultationMaterialsEntity> materials = new ArrayList<>();
 
          for (MaterialConsultationDTO materialDTO : dto.materials()) {
-            MaterialEntity material = materialRepository.findById(materialDTO.materialId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Material", "ID", materialDTO.materialId()));
+            MaterialEntity material = materialRepository.findById(materialDTO.id())
+                    .orElseThrow(() -> new ResourceNotFoundException("Material", "ID", materialDTO.id()));
 
             ConsultationMaterialsId id = new ConsultationMaterialsId();
             id.setConsultationId(consultation.getId());
@@ -64,7 +64,7 @@ public class ConsultationMaterialsCrudService {
             consultationMaterialRepository.save(consultationMaterialEntity);
             materials.add(consultationMaterialEntity);
 
-            getTotalFutureMaterialQuantity(materialDTO.materialId(), material);
+            getTotalFutureMaterialQuantity(materialDTO.id(), material);
 
             materialRepository.save(materialCrudService.setExpectedEndDateAndHighlight(material));
         }
@@ -81,8 +81,8 @@ public class ConsultationMaterialsCrudService {
                  continue;
              }
 
-            MaterialEntity material = materialRepository.findById(materialDTO.materialId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Material", "ID", materialDTO.materialId()));
+            MaterialEntity material = materialRepository.findById(materialDTO.id())
+                    .orElseThrow(() -> new ResourceNotFoundException("Material", "ID", materialDTO.id()));
 
             ConsultationMaterialsId id = new ConsultationMaterialsId();
             id.setConsultationId(consultation.getId());
@@ -97,7 +97,7 @@ public class ConsultationMaterialsCrudService {
             consultationMaterialRepository.save(consultationMaterialEntity);
             materials.add(consultationMaterialEntity);
 
-            getTotalFutureMaterialQuantity(materialDTO.materialId(), material);
+            getTotalFutureMaterialQuantity(materialDTO.id(), material);
 
             materialRepository.save(materialCrudService.setExpectedEndDateAndHighlight(material));
         }
