@@ -63,8 +63,9 @@ public class ConsultationCrudService {
         return consultations.stream().map(ConsultationCrudService::createResponseConsultationDTO).toList();
     }
 
-    public Page<ConsultationEntity> findByStatusScheduled(Pageable pageable) {
-        return consultationRepository.findByEndDateBeforeAndStatus(LocalDateTime.now(), ConsultationStatus.SCHEDULED, pageable);
+    public Page<ResponseConsultationDTO> findByStatusScheduled(Pageable pageable) {
+        Page<ConsultationEntity> consultations = consultationRepository.findByEndDateBeforeAndStatus(LocalDateTime.now(), ConsultationStatus.SCHEDULED, pageable);
+        return consultations.map(ConsultationCrudService::createResponseConsultationDTO);
     }
 
     public ResponseConsultationDTO create(PayloadConsultationDTO dto) {
@@ -113,7 +114,7 @@ public class ConsultationCrudService {
 
     private static ResponseConsultationDTO createResponseConsultationDTO(ConsultationEntity consultation) {
         List<MaterialConsultationDTO> materials = consultation.getMaterials().stream()
-                .map(m -> new MaterialConsultationDTO(m.getMaterial().getId(), m.getQuantity()))
+                .map(m -> new MaterialConsultationDTO(m.getMaterial().getId(), m.getMaterial().getName(), m.getQuantity()))
                 .toList();
 
         return new ResponseConsultationDTO(

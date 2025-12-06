@@ -42,7 +42,7 @@ public class ConsultationController {
     }
 
     @GetMapping("/concluded-false")
-    public ResponseEntity<Page<ConsultationEntity>> findByConcludedFalse(Pageable pageable) {
+    public ResponseEntity<Page<ResponseConsultationDTO>> findByConcludedFalse(Pageable pageable) {
         return ResponseEntity.ok(consultationCrudService.findByStatusScheduled(pageable));
     }
 
