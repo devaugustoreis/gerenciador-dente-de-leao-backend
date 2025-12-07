@@ -1,0 +1,1 @@
+UPDATE consultations SET status = 'CONCLUDED' WHERE status = 'COMPLETED';

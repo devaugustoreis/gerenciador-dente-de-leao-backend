@@ -3,9 +3,10 @@ package com.gerenciadordentedeleao.application.abstractions;
 import com.gerenciadordentedeleao.application.errorhandler.BusinessException;
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -27,8 +28,8 @@ public abstract class AbstractCrudService<T extends PersistableEntity> {
         return repository.findById(id);
     }
 
-    public List<T> findAll() {
-        return repository.findAll();
+    public Page<T> findAll(Pageable pageable) {
+        return repository.findAll(pageable);
     }
 
     public void delete(UUID id) {

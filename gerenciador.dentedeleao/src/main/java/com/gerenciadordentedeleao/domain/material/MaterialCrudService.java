@@ -14,11 +14,15 @@ import com.gerenciadordentedeleao.application.errorhandler.ResourceNotFoundExcep
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.*;
 import java.util.function.BiConsumer;
 
@@ -52,8 +56,8 @@ public class MaterialCrudService {
         return repository.findById(id);
     }
 
-    public List<MaterialEntity> findAll() {
-        return repository.findAll();
+    public Page<MaterialEntity> findAll(Pageable pageable) {
+        return repository.findAll(pageable);
     }
 
     public MaterialEntity create(CreateMaterialDTO dto) {
@@ -66,6 +70,7 @@ public class MaterialCrudService {
         material.setStockQuantity(0);
         material.setScheduledQuantity(0);
         material.setAlertQuantity(0);
+        material.setHighlight(false);
         return repository.save(material);
     }
 
@@ -86,19 +91,31 @@ public class MaterialCrudService {
         MaterialEntity material = repository.findById(materialId)
                 .orElseThrow(() -> new ResourceNotFoundException("Material", "ID", materialId));
         material.setScheduledQuantity(quantity);
+
         repository.save(material);
     }
 
-    public MaterialEntity setExpectedEndDate(MaterialEntity material, Date expectedEndDate) {
-        if (material.getScheduledQuantity() >= material.getStockQuantity() && material.getExpectedEndDate() == null) {
+    public MaterialEntity setExpectedEndDateAndHighlight(MaterialEntity material) {
+        Date duasSemanasDepois = Date.from(
+                LocalDate.now().plusWeeks(2)
+                        .atStartOfDay(ZoneId.systemDefault())
+                        .toInstant()
+        );
 
-            if (expectedEndDate == null){
-                expectedEndDate = consultationMaterialsCrudService.findExpectedEndDate(material);
-            }
+        boolean quantidadeAgendadaMaiorQueEstoque = material.getScheduledQuantity() >= material.getStockQuantity();
+        boolean possuiDataTermino = material.getExpectedEndDate() != null;
 
-            material.setExpectedEndDate(expectedEndDate);
-        }else if (material.getScheduledQuantity() < material.getStockQuantity() && material.getExpectedEndDate() != null){
+        if (quantidadeAgendadaMaiorQueEstoque && !possuiDataTermino) {
+            Date expectedEnd = consultationMaterialsCrudService.findExpectedEndDate(material);
+            material.setExpectedEndDate(expectedEnd);
+        } else if (!quantidadeAgendadaMaiorQueEstoque && possuiDataTermino) {
             material.setExpectedEndDate(null);
+        }
+
+        if (material.getExpectedEndDate() != null && material.getExpectedEndDate().before(duasSemanasDepois)) {
+            material.setHighlight(Boolean.TRUE);
+        }else{
+            material.setHighlight(Boolean.FALSE);
         }
 
         return material;
@@ -115,7 +132,7 @@ public class MaterialCrudService {
         movementActions.get(dto.movementType()).accept(material, dto);
 
         createMovementHistoric(dto, material);
-        material = setExpectedEndDate(material, null);
+        material = setExpectedEndDateAndHighlight(material);
         return repository.save(material);
     }
 
@@ -130,7 +147,7 @@ public class MaterialCrudService {
         }
 
         material.setStockQuantity(stockQuantity - dto.quantity());
-        material.setScheduledQuantity(consultationMaterialsRepository.countByMaterialId(material));
+        repository.save(setExpectedEndDateAndHighlight(material));
     }
 
     private void createMovementHistoric(MovementStockDTO dto, MaterialEntity material) {

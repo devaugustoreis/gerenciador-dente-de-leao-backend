@@ -14,17 +14,9 @@ public interface ConsultationMaterialsRepository extends JpaRepository<Consultat
     @Query("""
             SELECT COALESCE(SUM(consultationMaterial.quantity), 0)
             FROM ConsultationMaterialEntity consultationMaterial
-            WHERE consultationMaterial.material = :material AND consultationMaterial.consultation.concluded = false
+            WHERE consultationMaterial.material = :material AND consultationMaterial.consultation.status = SCHEDULED
             """)
     Integer countByMaterialId(@Param("material") MaterialEntity material);
-
-    @Query("""
-            SELECT consultationMaterial
-            FROM ConsultationMaterialEntity consultationMaterial
-            WHERE consultationMaterial.id = :id
-            AND consultationMaterial.consultation.id = :consultationId
-            """)
-    ConsultationMaterialsEntity findByConsultationId(@Param("consultationId") UUID consultationId, @Param("id") ConsultationMaterialsId id);
 
     @Query("""
             SELECT consultationMaterial
@@ -38,15 +30,10 @@ public interface ConsultationMaterialsRepository extends JpaRepository<Consultat
             SELECT consultationMaterial.quantity, FUNCTION('DATE', consultationMaterial.consultation.endDate)
             FROM ConsultationMaterialEntity consultationMaterial
             WHERE consultationMaterial.material = :material
+            AND consultationMaterial.consultation.status = SCHEDULED
             ORDER BY consultationMaterial.consultation.startDate
             """
     )
     List<Object[]> getMaterialsQuantities(@Param("material") MaterialEntity material);
 
-    @Modifying
-    @Transactional
-    @Query("DELETE FROM ConsultationMaterialEntity consultationMaterial " +
-            "WHERE consultationMaterial.consultation.id = :consultationId " +
-            "AND consultationMaterial.material.id = :materialId")
-    void deleteByConsultationAndMaterial(@Param("consultationId") UUID consultationId, @Param("materialId") UUID materialId);
 }

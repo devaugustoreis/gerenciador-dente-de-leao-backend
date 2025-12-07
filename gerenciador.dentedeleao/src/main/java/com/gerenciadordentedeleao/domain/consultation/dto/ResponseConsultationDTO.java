@@ -1,5 +1,6 @@
 package com.gerenciadordentedeleao.domain.consultation.dto;
 
+import com.gerenciadordentedeleao.domain.consultation.ConsultationStatus;
 import com.gerenciadordentedeleao.domain.material.dto.MaterialConsultationDTO;
 
 import java.time.LocalDateTime;
@@ -12,7 +13,8 @@ public record ResponseConsultationDTO(
         LocalDateTime  endDate,
         List<MaterialConsultationDTO> materials,
         UUID consultationTypeId,
-        UUID consultationId,
+        UUID id,
+        ConsultationStatus status,
         Boolean concluded
 ){
 }

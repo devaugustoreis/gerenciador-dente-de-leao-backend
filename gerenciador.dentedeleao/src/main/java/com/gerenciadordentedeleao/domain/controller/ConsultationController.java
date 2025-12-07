@@ -1,9 +1,11 @@
 package com.gerenciadordentedeleao.domain.controller;
 
 import com.gerenciadordentedeleao.domain.consultation.ConsultationCrudService;
+import com.gerenciadordentedeleao.domain.consultation.ConsultationEntity;
 import com.gerenciadordentedeleao.domain.consultation.dto.PayloadConsultationDTO;
 import com.gerenciadordentedeleao.domain.consultation.dto.ResponseConsultationDTO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -26,7 +28,7 @@ public class ConsultationController {
     }
 
     @GetMapping("{id}")
-    public ResponseEntity<ResponseConsultationDTO> finDTOById(@PathVariable UUID id) {
+    public ResponseEntity<ResponseConsultationDTO> findDTOById(@PathVariable UUID id) {
         var responseConsultationDTO = consultationCrudService.findById(id);
         return ResponseEntity.ok(responseConsultationDTO);
     }
@@ -37,6 +39,11 @@ public class ConsultationController {
                                                                     Pageable pageable) {
         var responseConsultationDTOList = consultationCrudService.findAll(startDate, endDate, pageable);
         return ResponseEntity.ok(responseConsultationDTOList);
+    }
+
+    @GetMapping("/concluded-false")
+    public ResponseEntity<Page<ResponseConsultationDTO>> findByConcludedFalse(Pageable pageable) {
+        return ResponseEntity.ok(consultationCrudService.findByStatusScheduled(pageable));
     }
 
     @PostMapping()
@@ -51,7 +58,7 @@ public class ConsultationController {
         return ResponseEntity.ok(responseConsultationDTO);
     }
 
-    @DeleteMapping("finalizar/{id}")
+    @PostMapping("finalizar/{id}")
     public ResponseEntity<Void> finalizarConsulta(@PathVariable("id") UUID id) {
         consultationCrudService.finalizarConsulta(id);
         return ResponseEntity.noContent().build();

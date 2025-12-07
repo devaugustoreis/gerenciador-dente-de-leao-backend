@@ -2,6 +2,7 @@ package com.gerenciadordentedeleao.domain.consultation.materials;
 
 import com.gerenciadordentedeleao.application.errorhandler.ResourceNotFoundException;
 import com.gerenciadordentedeleao.domain.consultation.ConsultationEntity;
+import com.gerenciadordentedeleao.domain.consultation.ConsultationRepository;
 import com.gerenciadordentedeleao.domain.consultation.dto.PayloadConsultationDTO;
 import com.gerenciadordentedeleao.domain.material.MaterialCrudService;
 import com.gerenciadordentedeleao.domain.material.MaterialEntity;
@@ -10,7 +11,6 @@ import com.gerenciadordentedeleao.domain.material.dto.MaterialConsultationDTO;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -25,10 +25,13 @@ public class ConsultationMaterialsCrudService {
 
     private final MaterialRepository materialRepository;
 
-     public ConsultationMaterialsCrudService(@Lazy MaterialCrudService materialCrudService, ConsultationMaterialsRepository consultationMaterialRepository, MaterialRepository materialRepository) {
+    private final ConsultationRepository consultationRepository;
+
+     public ConsultationMaterialsCrudService(@Lazy MaterialCrudService materialCrudService, ConsultationMaterialsRepository consultationMaterialRepository, MaterialRepository materialRepository, ConsultationRepository consultationRepository) {
         this.materialCrudService = materialCrudService;
         this.consultationMaterialRepository = consultationMaterialRepository;
         this.materialRepository = materialRepository;
+        this.consultationRepository = consultationRepository;
     }
 
     public void getTotalFutureMaterialQuantity(UUID materialId, MaterialEntity material) {
@@ -45,8 +48,8 @@ public class ConsultationMaterialsCrudService {
         List<ConsultationMaterialsEntity> materials = new ArrayList<>();
 
          for (MaterialConsultationDTO materialDTO : dto.materials()) {
-            MaterialEntity material = materialRepository.findById(materialDTO.materialId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Material", "ID", materialDTO.materialId()));
+            MaterialEntity material = materialRepository.findById(materialDTO.id())
+                    .orElseThrow(() -> new ResourceNotFoundException("Material", "ID", materialDTO.id()));
 
             ConsultationMaterialsId id = new ConsultationMaterialsId();
             id.setConsultationId(consultation.getId());
@@ -61,42 +64,45 @@ public class ConsultationMaterialsCrudService {
             consultationMaterialRepository.save(consultationMaterialEntity);
             materials.add(consultationMaterialEntity);
 
-            getTotalFutureMaterialQuantity(materialDTO.materialId(), material);
+            getTotalFutureMaterialQuantity(materialDTO.id(), material);
 
-            Date endDate = Date.from(dto.endDate().atZone(ZoneId.systemDefault()).toInstant());
-
-             materialRepository.save(materialCrudService.setExpectedEndDate(material, endDate));
+            materialRepository.save(materialCrudService.setExpectedEndDateAndHighlight(material));
         }
 
          return materials;
     }
 
-    public void updateConsultationMaterials(PayloadConsultationDTO dto, ConsultationEntity consultation) {
-        for (MaterialConsultationDTO materialDTO : dto.materials()){
-            MaterialEntity material = materialRepository.findById(materialDTO.materialId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Material", "ID", materialDTO.materialId()));
+    public List<ConsultationMaterialsEntity> updateConsultationMaterials(PayloadConsultationDTO dto, ConsultationEntity consultation) {
+        List<ConsultationMaterialsEntity> materials = new ArrayList<>();
+
+         for (MaterialConsultationDTO materialDTO : dto.materials()){
+
+             if (materialDTO.quantity().equals(0)) {
+                 continue;
+             }
+
+            MaterialEntity material = materialRepository.findById(materialDTO.id())
+                    .orElseThrow(() -> new ResourceNotFoundException("Material", "ID", materialDTO.id()));
 
             ConsultationMaterialsId id = new ConsultationMaterialsId();
             id.setConsultationId(consultation.getId());
             id.setMaterialId(material.getId());
 
-            ConsultationMaterialsEntity consultationMaterialEntity = consultationMaterialRepository.findByConsultationId(consultation.getId(), id);
-
-            if (materialDTO.quantity() == 0) {
-                consultationMaterialRepository.deleteByConsultationAndMaterial(consultation.getId(), material.getId());
-            }
-
+            ConsultationMaterialsEntity consultationMaterialEntity = new ConsultationMaterialsEntity();
             consultationMaterialEntity.setId(id);
+            consultationMaterialEntity.setConsultation(consultation);
             consultationMaterialEntity.setMaterial(material);
             consultationMaterialEntity.setQuantity(materialDTO.quantity());
 
             consultationMaterialRepository.save(consultationMaterialEntity);
+            materials.add(consultationMaterialEntity);
 
-            getTotalFutureMaterialQuantity(materialDTO.materialId(), material);
+            getTotalFutureMaterialQuantity(materialDTO.id(), material);
 
-            Date endDate = Date.from(dto.endDate().atZone(ZoneId.systemDefault()).toInstant());
-            materialRepository.save(materialCrudService.setExpectedEndDate(material, endDate));
+            materialRepository.save(materialCrudService.setExpectedEndDateAndHighlight(material));
         }
+
+        return materials;
     }
 
     public Date findExpectedEndDate(MaterialEntity material){
@@ -113,22 +119,4 @@ public class ConsultationMaterialsCrudService {
 
         return null;
     }
-
-//    private void delete(ConsultationMaterialsEntity consultationMaterialEntity) {
-//        try {
-//            consultationMaterialRepository.delete(consultationMaterialEntity);
-//        } catch (DataIntegrityViolationException e) {
-//            if (!(e.getCause() instanceof ConstraintViolationException cve && "23503".equals(cve.getSQLState()))) {
-//                throw new BusinessException("Erro ao excluir o registro: " + e.getMessage(), e);
-//            }
-//            var entity = consultationMaterialRepository.findById(id).orElseThrow(() -> new BusinessException("Consulta não econtrado com o ID: %s para realizar a exclusão".formatted(id)));
-//            var markedAsDeleted = entity.setAsDeleted();
-//            if (markedAsDeleted) {
-//                consultationMaterialRepository.save(entity);
-//            }
-//        } catch (Exception e) {
-//            throw new BusinessException("Erro ao excluir o registro: " + e.getMessage(), e);
-//        }
-//    }
-
 }
