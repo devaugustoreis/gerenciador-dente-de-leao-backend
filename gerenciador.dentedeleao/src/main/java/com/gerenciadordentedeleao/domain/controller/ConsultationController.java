@@ -28,7 +28,7 @@ public class ConsultationController {
     }
 
     @GetMapping("{id}")
-    public ResponseEntity<ResponseConsultationDTO> finDTOById(@PathVariable UUID id) {
+    public ResponseEntity<ResponseConsultationDTO> findDTOById(@PathVariable UUID id) {
         var responseConsultationDTO = consultationCrudService.findById(id);
         return ResponseEntity.ok(responseConsultationDTO);
     }

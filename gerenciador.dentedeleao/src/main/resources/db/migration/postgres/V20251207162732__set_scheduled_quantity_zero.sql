@@ -1,0 +1,1 @@
+UPDATE materials SET scheduled_quantity = 0 WHERE scheduled_quantity IS NULL;

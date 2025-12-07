@@ -103,6 +103,10 @@ public class ConsultationCrudService {
         consultation = consultationRepository.save(consultation);
         consultation.setStatus(dto.status());
 
+        if (dto.status() == ConsultationStatus.CANCELED) {
+            canceled_consultation(consultation.getId());
+        }
+
         List<ConsultationMaterialsEntity> materials = consultationMaterialsCrudService.updateConsultationMaterials(dto, consultation);
 
         consultation.getMaterials().clear();
@@ -110,6 +114,18 @@ public class ConsultationCrudService {
         consultation = consultationRepository.save(consultation);
 
         return createResponseConsultationDTO(consultation);
+    }
+
+    private void canceled_consultation(UUID consultation_id){
+        List<ConsultationMaterialsEntity> consultationMaterialEntity = consultationMaterialRepository.findByIdReturnId(consultation_id);
+
+        for (ConsultationMaterialsEntity entity : consultationMaterialEntity) {
+            MaterialEntity material = materialRepository.findById(entity.getMaterial().getId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Material", "ID", entity.getMaterial().getId()));
+
+            consultationMaterialsCrudService.getTotalFutureMaterialQuantity(material.getId(), material);
+            materialRepository.save(materialCrudService.setExpectedEndDateAndHighlight(material));
+        }
     }
 
     private static ResponseConsultationDTO createResponseConsultationDTO(ConsultationEntity consultation) {
@@ -152,7 +168,20 @@ public class ConsultationCrudService {
 
     public void delete(UUID id) {
         try {
+            ConsultationEntity consultation = consultationRepository.findById(id)
+                    .orElseThrow(() -> new ResourceNotFoundException("Consulta", "ID", id));
+
+            List<ConsultationMaterialsEntity> consultationMaterialEntity = consultationMaterialRepository.findByIdReturnId(id);
+
             consultationRepository.deleteById(id);
+
+            for (ConsultationMaterialsEntity entity : consultationMaterialEntity) {
+                MaterialEntity material = materialRepository.findById(entity.getMaterial().getId())
+                        .orElseThrow(() -> new ResourceNotFoundException("Material", "ID", entity.getMaterial().getId()));
+
+                consultationMaterialsCrudService.getTotalFutureMaterialQuantity(material.getId(), material);
+                materialRepository.save(materialCrudService.setExpectedEndDateAndHighlight(material));
+            }
         } catch (DataIntegrityViolationException e) {
             if (!(e.getCause() instanceof ConstraintViolationException cve && "23503".equals(cve.getSQLState()))) {
                 throw new BusinessException("Erro ao excluir o registro: " + e.getMessage(), e);

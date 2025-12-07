@@ -147,7 +147,7 @@ public class MaterialCrudService {
         }
 
         material.setStockQuantity(stockQuantity - dto.quantity());
-        material.setScheduledQuantity(consultationMaterialsRepository.countByMaterialId(material));
+        repository.save(setExpectedEndDateAndHighlight(material));
     }
 
     private void createMovementHistoric(MovementStockDTO dto, MaterialEntity material) {
