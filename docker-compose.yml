@@ -20,7 +20,7 @@ services:
       - dente_de_leao_network
 
   app:
-    image: gerenciador-dente-de-leao-local:latest
+    image: arthurluciani/gerenciador-dente-de-leao:latest-backend
     depends_on:
       - db
     environment:
